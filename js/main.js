@@ -20,10 +20,15 @@ var NUMBER_OF_ANNOUNCEMENTS = 8;
 
 document.querySelector('.map').classList.remove('map--faded');
 
-var map = document.querySelector('.map__pins');
+var map = document.querySelector('.map');
+var mapPins = document.querySelector('.map__pins');
 var pinTemplate = document.querySelector('#pin')
     .content
     .querySelector('button');
+var announcementTemplate = document.querySelector('#card')
+    .content
+    .querySelector('article');
+var mapFiltersContainer = document.querySelector('.map__filters-container');
 
 /**
  * Возвращает случайное число в диапазоне от min до max(не включая).
@@ -66,7 +71,7 @@ var generateAllAnnouncements = function (numberOfAnnouncements) {
       },
       offer: {
         title: 'Объявление о продаже',
-        price: 500,
+        price: 1500,
         type: getRandomValueFromArray(APARTAMENT_TYPES),
         rooms: 4,
         guests: 5,
@@ -117,15 +122,73 @@ var renderPins = function (announcements) {
   return pins;
 };
 
+/**
+ * Добавляет пины офферов на карту.
+ *
+ * @param {array} pins - Массив с нодами офферов.
+ */
 var appendPins = function (pins) {
   var fragment = document.createDocumentFragment();
 
   for (var i = 0; i < pins.length; i++) {
     fragment.appendChild(pins[i]);
   }
-  map.appendChild(fragment);
+  mapPins.appendChild(fragment);
 };
 
 var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
 var htmlPins = renderPins(announcements);
 appendPins(htmlPins);
+
+/**
+ * Возвращает название апартаментов на русском языке.
+ *
+ * @param {string} engApartamentType - Название апартаментов на англ. языке.
+ * @return {string} Название апартаментов на русском языке.
+ */
+var getRusApartamentType = function (engApartamentType) {
+  if (engApartamentType === 'flat') {
+    return 'Квартира';
+  } else if (engApartamentType === 'bungalo') {
+    return 'Бунгало';
+  } else if (engApartamentType === 'house') {
+    return 'Дом';
+  } else if (engApartamentType === 'palace') {
+    return 'Дворец';
+  } else {
+    return engApartamentType;
+  }
+};
+
+var appendFeatures = function (featuresArray) {
+  var featureElement = document.createElement('li');
+  var popup = document.querySelector('.popup__features');
+
+  for (var i = 0; i < featuresArray.length; i++) {
+    featureElement.className = 'popup__feature popup__feature--' + featuresArray[i];
+    popup.appendChild(featureElement);
+  }
+};
+
+var generateAnnouncementElement = function (announcementsArray) {
+  var fragment = document.createDocumentFragment();
+
+  announcementsArray.forEach(function (item) {
+    var announcementElement = announcementTemplate.cloneNode(true);
+
+    announcementElement.querySelector('.popup__title').textContent = item.offer.title;
+    announcementElement.querySelector('.popup__text--address').textContent = item.offer.address;
+    announcementElement.querySelector('.popup__text--price').innerHTML = item.offer.price + '&#8381;' + '/ночь';
+    announcementElement.querySelector('.popup__type').textContent = getRusApartamentType(item.offer.type);
+    announcementElement.querySelector('.popup__text--capacity').textContent = item.offer.rooms + ' комнаты для ' + item.offer.guests + ' гостей';
+    announcementElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + item.offer.checkin + ', выезд до ' + item.offer.checkout;
+    // appendFeatures(item.offer.features);
+    announcementElement.querySelector('.popup__description').textContent = item.offer.description;
+    announcementElement.querySelector('.popup__avatar').setAttribute('src', item.author.avatar);
+
+    fragment.appendChild(announcementElement);
+  });
+  map.insertBefore(fragment, mapFiltersContainer);
+};
+
+generateAnnouncementElement(announcements);
