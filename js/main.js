@@ -102,18 +102,18 @@ var generateAllAnnouncements = function (numberOfAnnouncements) {
 var renderPins = function (announcements) {
   var pins = [];
 
-  announcements.forEach(function (item, index) {
+  announcements.forEach(function (advert) {
     var pinElement = pinTemplate.cloneNode(true);
     var pinImg = pinElement.querySelector('img');
 
-    var avatarUrl = announcements[index].author.avatar;
+    var avatarUrl = advert.author.avatar;
     pinImg.setAttribute('src', avatarUrl);
 
-    var offerTitle = announcements[index].offer.title;
+    var offerTitle = advert.offer.title;
     pinImg.setAttribute('alt', offerTitle);
 
-    var locationX = announcements[index].location.x + PIN_WIDTH / 2 + 'px';
-    var locationY = announcements[index].location.y + PIN_HEIGHT + 'px';
+    var locationX = advert.location.x + PIN_WIDTH / 2 + 'px';
+    var locationY = advert.location.y + PIN_HEIGHT + 'px';
     var pinCoordinates = 'left: ' + locationX + '; ' + 'top: ' + locationY + ';';
     pinElement.setAttribute('style', pinCoordinates);
 
@@ -165,8 +165,8 @@ var getRusApartamentType = function (engApartamentType) {
  */
 var editFeatures = function (elementTemplate, arrayWithDeleteFeatures) {
   var featuresList = elementTemplate.querySelector('.popup__features');
-  arrayWithDeleteFeatures.forEach(function (item) {
-    var selector = '.popup__feature--' + item;
+  arrayWithDeleteFeatures.forEach(function (feature) {
+    var selector = '.popup__feature--' + feature;
     var featureItem = featuresList.querySelector(selector);
     featuresList.removeChild(featureItem);
   });
@@ -203,23 +203,23 @@ var addOfferPhotos = function (elementTemplate, arrayWithPhotos) {
 var appendAnnouncements = function (announcementsArray) {
   var fragment = document.createDocumentFragment();
 
-  announcementsArray.forEach(function (item) {
+  announcementsArray.forEach(function (advert) {
     var announcementElement = announcementTemplate.cloneNode(true);
 
-    announcementElement.querySelector('.popup__title').textContent = item.offer.title;
-    announcementElement.querySelector('.popup__text--address').textContent = item.offer.address;
-    announcementElement.querySelector('.popup__text--price').innerHTML = item.offer.price + '&#8381;' + '/ночь';
-    announcementElement.querySelector('.popup__type').textContent = getRusApartamentType(item.offer.type);
-    announcementElement.querySelector('.popup__text--capacity').textContent = item.offer.rooms + ' комнаты для ' + item.offer.guests + ' гостей';
-    announcementElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + item.offer.checkin + ', выезд до ' + item.offer.checkout;
-    announcementElement.querySelector('.popup__description').textContent = item.offer.description;
-    announcementElement.querySelector('.popup__avatar').setAttribute('src', item.author.avatar);
+    announcementElement.querySelector('.popup__title').textContent = advert.offer.title;
+    announcementElement.querySelector('.popup__text--address').textContent = advert.offer.address;
+    announcementElement.querySelector('.popup__text--price').innerHTML = advert.offer.price + '&#8381;' + '/ночь';
+    announcementElement.querySelector('.popup__type').textContent = getRusApartamentType(advert.offer.type);
+    announcementElement.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' комнаты для ' + advert.offer.guests + ' гостей';
+    announcementElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
+    announcementElement.querySelector('.popup__description').textContent = advert.offer.description;
+    announcementElement.querySelector('.popup__avatar').setAttribute('src', advert.author.avatar);
 
     var deleteFeatures = FEATURES.filter(function (feature) {
-      return !item.offer.features.includes(feature);
+      return !advert.offer.features.includes(feature);
     });
     editFeatures(announcementElement, deleteFeatures);
-    addOfferPhotos(announcementElement, item.offer.photos);
+    addOfferPhotos(announcementElement, advert.offer.photos);
 
     fragment.appendChild(announcementElement);
   });
