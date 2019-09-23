@@ -215,7 +215,7 @@ var addOfferPhotos = function (elementTemplate, arrayWithPhotos) {
 /**
  * Добавляет карточки офферов в разметку.
  *
- * @param {array} announcementsArray - Массив с объектами объявлений.
+ * @param {array} announcementsArray - Массив с объектами офферов.
  */
 var appendAnnouncements = function (announcementsArray) {
   var fragment = document.createDocumentFragment();
