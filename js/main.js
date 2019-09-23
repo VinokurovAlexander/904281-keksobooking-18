@@ -157,23 +157,6 @@ var getRusApartamentType = function (engApartamentType) {
 };
 
 /**
- * Удаляет элементы массива deleteItemsArray из массива mainArray.
- *
- * @param {array} deleteItemsArray - Массив, элементы которого нужно найти в другом массиве и удалить.
- * @param {array} mainArray - Массив в котором удалются элементы.
- * @return {array} Массив с удаленными элементами.
- */
-var getDiffArray = function (deleteItemsArray, mainArray) {
-  deleteItemsArray.forEach(function (feature) {
-    if (mainArray.includes(feature)) {
-      var deleteItemIndex = mainArray.indexOf(feature);
-      mainArray.splice(deleteItemIndex, 1);
-    }
-  });
-  return mainArray;
-};
-
-/**
  * Удаляет лишние удобства в карточке оффера.
  *
  * @param {object} elementTemplate - Шаблон карточки объявления.
@@ -232,7 +215,10 @@ var appendAnnouncements = function (announcementsArray) {
     announcementElement.querySelector('.popup__description').textContent = item.offer.description;
     announcementElement.querySelector('.popup__avatar').setAttribute('src', item.author.avatar);
 
-    editFeatures(announcementElement, getDiffArray(item.offer.features, FEATURES));
+    var deleteFeatures = FEATURES.filter(function (feature) {
+      return !item.offer.features.includes(feature);
+    });
+    editFeatures(announcementElement, deleteFeatures);
     addOfferPhotos(announcementElement, item.offer.photos);
 
     fragment.appendChild(announcementElement);
@@ -240,7 +226,7 @@ var appendAnnouncements = function (announcementsArray) {
   map.insertBefore(fragment, mapFiltersContainer);
 };
 
-var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
+var announcements = generateAllAnnouncements(1);
 var htmlPins = renderPins(announcements);
 appendPins(htmlPins);
 appendAnnouncements(announcements);
