@@ -136,10 +136,6 @@ var appendPins = function (pins) {
   mapPins.appendChild(fragment);
 };
 
-var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
-var htmlPins = renderPins(announcements);
-appendPins(htmlPins);
-
 /**
  * Возвращает название апартаментов на русском языке.
  *
@@ -160,17 +156,68 @@ var getRusApartamentType = function (engApartamentType) {
   }
 };
 
-var appendFeatures = function (featuresArray) {
-  var featureElement = document.createElement('li');
-  var popup = document.querySelector('.popup__features');
+/**
+ * Удаляет элементы массива deleteItemsArray из массива mainArray.
+ *
+ * @param {array} deleteItemsArray - Массив, элементы которого нужно найти в другом массиве и удалить.
+ * @param {array} mainArray - Массив в котором удалются элементы.
+ * @return {array} Массив с удаленными элементами.
+ */
+var getDiffArray = function (deleteItemsArray, mainArray) {
+  deleteItemsArray.forEach(function (feature) {
+    if (mainArray.includes(feature)) {
+      var deleteItemIndex = mainArray.indexOf(feature);
+      mainArray.splice(deleteItemIndex, 1);
+    }
+  });
+  return mainArray;
+};
 
-  for (var i = 0; i < featuresArray.length; i++) {
-    featureElement.className = 'popup__feature popup__feature--' + featuresArray[i];
-    popup.appendChild(featureElement);
+/**
+ * Удаляет лишние удобства в карточке оффера.
+ *
+ * @param {object} elementTemplate - Шаблон карточки объявления.
+ * @param {array} arrayWithDeleteFeatures - Массив в котором указаны названия удобств,
+ * которые нужно удалить.
+ */
+var editFeatures = function (elementTemplate, arrayWithDeleteFeatures) {
+  var featuresList = elementTemplate.querySelector('.popup__features');
+  arrayWithDeleteFeatures.forEach(function (item) {
+    var selector = '.popup__feature--' + item;
+    var featureItem = featuresList.querySelector(selector);
+    featuresList.removeChild(featureItem);
+  });
+};
+
+/**
+ * Добавляет фотографии апартаментов в карточку оффера.
+ *
+ * @param {object} elementTemplate - Шаблон карточки объявления.
+ * @param {array} arrayWithPhotos - Массив с адресами фотографий.
+ */
+var addOfferPhotos = function (elementTemplate, arrayWithPhotos) {
+  var offerImgWrapper = elementTemplate.querySelector('.popup__photos');
+  var offerImg = offerImgWrapper.querySelector('.popup__photo');
+  var fragment = document.createDocumentFragment();
+
+  offerImg.setAttribute('src', arrayWithPhotos[0]);
+
+  if (arrayWithPhotos.length > 1) {
+    for (var i = 1; i < arrayWithPhotos.length; i++) {
+      var imgElement = offerImg.cloneNode(true);
+      imgElement.setAttribute('src', arrayWithPhotos[i]);
+      fragment.appendChild(imgElement);
+    }
+    offerImgWrapper.appendChild(fragment);
   }
 };
 
-var generateAnnouncementElement = function (announcementsArray) {
+/**
+ * Добавляет карточки офферов в разметку.
+ *
+ * @param {array} announcementsArray - Массив с объектами объявлений.
+ */
+var appendAnnouncements = function (announcementsArray) {
   var fragment = document.createDocumentFragment();
 
   announcementsArray.forEach(function (item) {
@@ -182,13 +229,18 @@ var generateAnnouncementElement = function (announcementsArray) {
     announcementElement.querySelector('.popup__type').textContent = getRusApartamentType(item.offer.type);
     announcementElement.querySelector('.popup__text--capacity').textContent = item.offer.rooms + ' комнаты для ' + item.offer.guests + ' гостей';
     announcementElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + item.offer.checkin + ', выезд до ' + item.offer.checkout;
-    // appendFeatures(item.offer.features);
     announcementElement.querySelector('.popup__description').textContent = item.offer.description;
     announcementElement.querySelector('.popup__avatar').setAttribute('src', item.author.avatar);
+
+    editFeatures(announcementElement, getDiffArray(item.offer.features, FEATURES));
+    addOfferPhotos(announcementElement, item.offer.photos);
 
     fragment.appendChild(announcementElement);
   });
   map.insertBefore(fragment, mapFiltersContainer);
 };
 
-generateAnnouncementElement(announcements);
+var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
+var htmlPins = renderPins(announcements);
+appendPins(htmlPins);
+appendAnnouncements(announcements);
