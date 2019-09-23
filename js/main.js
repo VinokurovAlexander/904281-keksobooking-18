@@ -226,7 +226,7 @@ var appendAnnouncements = function (announcementsArray) {
   map.insertBefore(fragment, mapFiltersContainer);
 };
 
-var announcements = generateAllAnnouncements(1);
+var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
 var htmlPins = renderPins(announcements);
 appendPins(htmlPins);
 appendAnnouncements(announcements);
