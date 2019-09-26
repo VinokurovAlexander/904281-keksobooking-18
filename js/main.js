@@ -15,7 +15,7 @@ var APARTAMENT_PHOTOS = [
 ];
 var Locations = {
   Y_MIN: 130,
-  Y_MAX: 630,
+  Y_MAX: 560,
   X_MIN: 100,
   X_MAX: 1100
 };
@@ -44,6 +44,7 @@ var form = document.querySelector('.ad-form');
 var Page = {
   active: false
 };
+var submitFormBtn = form.querySelector('.ad-form__submit');
 
 /**
  * Возвращает случайное число в диапазоне от min до max(не включая).
@@ -251,7 +252,6 @@ var makeFormFieldsActive = function (isFormFieldsActive) {
 var makePageActive = function () {
   var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
   var htmlPins = renderPins(announcements);
-  console.log(announcements);
 
   map.classList.remove('map--faded');
   form.classList.remove('ad-form--disabled');
@@ -274,6 +274,22 @@ var setAddressInputValues = function () {
   + (parseInt(mainMapPin.style.top, 10) + PIN_HEIGHT) + '}';
 };
 
+var validityRoomsAndGuests = function () {
+  var roomsUserValue = form.querySelector('select[name="rooms"] option:checked').value;
+  var guestsSelect = form.querySelector('select[name="capacity"]');
+  var guestsUserValue = guestsSelect.querySelector('option:checked').value;
+
+  if (roomsUserValue === '100' && guestsUserValue !== '0') {
+    guestsSelect.setCustomValidity('Данное количество комнат предназначено не для гостей');
+  } else if (guestsUserValue === '0' && roomsUserValue !== '100') {
+    guestsSelect.setCustomValidity('Для данного количества гостей предназначено только 100 комнат');
+  } else if (guestsUserValue !== '100' && (guestsUserValue > roomsUserValue)) {
+    guestsSelect.setCustomValidity('Максимальное количество гостей: ' + roomsUserValue);
+  } else {
+    guestsSelect.setCustomValidity('');
+  }
+};
+
 makeFormFieldsActive(false);
 setAddressInputValues();
 
@@ -290,5 +306,15 @@ mainMapPin.addEventListener('keydown', function (evt) {
       makePageActive();
     }
     setAddressInputValues();
+  }
+});
+
+submitFormBtn.addEventListener('click', function () {
+  validityRoomsAndGuests();
+});
+
+submitFormBtn.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    validityRoomsAndGuests();
   }
 });
