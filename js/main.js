@@ -71,10 +71,10 @@ var generateAllAnnouncements = function (numberOfAnnouncements) {
       },
       offer: {
         title: 'Объявление о продаже',
-        price: 1500,
+        price: getRandomNumberFromRange(10, 1000000),
         type: getRandomValueFromArray(APARTAMENT_TYPES),
-        rooms: 4,
-        guests: 5,
+        rooms: getRandomNumberFromRange(1, 5),
+        guests: getRandomNumberFromRange(1, 5),
         checkin: getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
         checkout: getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
         features: FEATURES.slice(getRandomNumberFromRange(0, FEATURES.length)),
@@ -143,17 +143,13 @@ var appendPins = function (pins) {
  * @return {string} Название апартаментов на русском языке.
  */
 var getRusApartamentType = function (engApartamentType) {
-  if (engApartamentType === 'flat') {
-    return 'Квартира';
-  } else if (engApartamentType === 'bungalo') {
-    return 'Бунгало';
-  } else if (engApartamentType === 'house') {
-    return 'Дом';
-  } else if (engApartamentType === 'palace') {
-    return 'Дворец';
-  } else {
-    return engApartamentType;
-  }
+  var apartamentType = {
+    flat: 'Квартира',
+    bungalo: 'Бунгало',
+    house: 'Дом',
+    palace: 'Дворец'
+  };
+  return apartamentType[engApartamentType];
 };
 
 /**
@@ -183,16 +179,14 @@ var addOfferPhotos = function (elementTemplate, arrayWithPhotos) {
   var offerImg = offerImgWrapper.querySelector('.popup__photo');
   var fragment = document.createDocumentFragment();
 
-  offerImg.setAttribute('src', arrayWithPhotos[0]);
+  offerImgWrapper.removeChild(offerImg);
 
-  if (arrayWithPhotos.length > 1) {
-    for (var i = 1; i < arrayWithPhotos.length; i++) {
-      var imgElement = offerImg.cloneNode(true);
-      imgElement.setAttribute('src', arrayWithPhotos[i]);
-      fragment.appendChild(imgElement);
-    }
-    offerImgWrapper.appendChild(fragment);
-  }
+  arrayWithPhotos.forEach(function (photoUrl) {
+    var imgElement = offerImg.cloneNode(true);
+    imgElement.setAttribute('src', photoUrl);
+    fragment.appendChild(imgElement);
+  });
+  offerImgWrapper.appendChild(fragment);
 };
 
 /**
@@ -208,7 +202,7 @@ var appendAnnouncements = function (announcementsArray) {
 
     announcementElement.querySelector('.popup__title').textContent = advert.offer.title;
     announcementElement.querySelector('.popup__text--address').textContent = advert.offer.address;
-    announcementElement.querySelector('.popup__text--price').innerHTML = advert.offer.price + '&#8381;' + '/ночь';
+    announcementElement.querySelector('.popup__text--price').textContent = advert.offer.price + ' ₽/ночь';
     announcementElement.querySelector('.popup__type').textContent = getRusApartamentType(advert.offer.type);
     announcementElement.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' комнаты для ' + advert.offer.guests + ' гостей';
     announcementElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
