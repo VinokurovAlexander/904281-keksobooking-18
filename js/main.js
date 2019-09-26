@@ -25,6 +25,7 @@ var RoomsAndGuestsRange = {
   MIN_NUMBER: 1,
   MAX_NUMBER: 5
 };
+var ENTER_KEYCODE = 13;
 
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
@@ -35,6 +36,7 @@ var announcementTemplate = document.querySelector('#card')
     .content
     .querySelector('article');
 var mapFiltersContainer = document.querySelector('.map__filters-container');
+var mainMapPin = map.querySelector('.map__pin--main');
 
 /**
  * Возвращает случайное число в диапазоне от min до max(не включая).
@@ -226,7 +228,56 @@ var appendAnnouncements = function (announcementsArray) {
   map.insertBefore(fragment, mapFiltersContainer);
 };
 
-var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
-var htmlPins = renderPins(announcements);
-appendPins(htmlPins);
-appendAnnouncements(announcements);
+// var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
+// var htmlPins = renderPins(announcements);
+// appendPins(htmlPins);
+// appendAnnouncements(announcements);
+
+/**
+ * Изменяет активность полей формы подачи объявления
+ * и формы с фильтрами на карте.
+ *
+ * @param {boolean} isFormFieldsActive - если true, поля активны для ввода,
+ * иначе - false.
+ */
+var makeFormFieldsActive = function (isFormFieldsActive) {
+  var formElements = {
+    fieldsets: document.querySelectorAll('.ad-form__element'),
+    mapFilters: document.querySelectorAll('.map__filter')
+  };
+
+  for (var elements in formElements) {
+    if (formElements.hasOwnProperty(elements)) {
+      formElements[elements].forEach(function (element) {
+        if (isFormFieldsActive) {
+          element.removeAttribute('disabled');
+        } else {
+          element.setAttribute('disabled', true);
+        }
+      });
+    }
+  }
+};
+
+/**
+ * Переводит страницу в активное состояние.
+ */
+var makePageActive = function () {
+  var form = document.querySelector('.ad-form');
+
+  map.classList.remove('map--faded');
+  form.classList.remove('ad-form--disabled');
+  makeFormFieldsActive(true);
+};
+
+makeFormFieldsActive(false);
+
+mainMapPin.addEventListener('mousedown', function () {
+  makePageActive();
+});
+
+mainMapPin.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    makePageActive();
+  }
+});
