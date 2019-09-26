@@ -37,6 +37,7 @@ var announcementTemplate = document.querySelector('#card')
     .querySelector('article');
 var mapFiltersContainer = document.querySelector('.map__filters-container');
 var mainMapPin = map.querySelector('.map__pin--main');
+var form = document.querySelector('.ad-form');
 
 /**
  * Возвращает случайное число в диапазоне от min до max(не включая).
@@ -242,8 +243,8 @@ var appendAnnouncements = function (announcementsArray) {
  */
 var makeFormFieldsActive = function (isFormFieldsActive) {
   var formElements = {
-    fieldsets: document.querySelectorAll('.ad-form__element'),
-    mapFilters: document.querySelectorAll('.map__filter')
+    fieldsets: form.querySelectorAll('.ad-form__element'),
+    mapFilters: map.querySelectorAll('.map__filter')
   };
 
   for (var elements in formElements) {
@@ -263,21 +264,35 @@ var makeFormFieldsActive = function (isFormFieldsActive) {
  * Переводит страницу в активное состояние.
  */
 var makePageActive = function () {
-  var form = document.querySelector('.ad-form');
-
   map.classList.remove('map--faded');
   form.classList.remove('ad-form--disabled');
   makeFormFieldsActive(true);
 };
 
+/**
+ * Устанавливает значения поля ввода адреса.
+ */
+var setAddressInputValues = function () {
+  var addressInput = form.querySelector('input[name="address"]');
+
+  addressInput.value = map.classList.contains('map--faded') ?
+    '{' + (parseInt(mainMapPin.style.left, 10) + PIN_WIDTH / 2) + '}, {'
+  + (parseInt(mainMapPin.style.top, 10) + PIN_HEIGHT / 2) + '}' :
+    '{' + (parseInt(mainMapPin.style.left, 10) + PIN_WIDTH / 2) + '}, {'
+  + (parseInt(mainMapPin.style.top, 10) + PIN_HEIGHT) + '}';
+};
+
 makeFormFieldsActive(false);
+setAddressInputValues();
 
 mainMapPin.addEventListener('mousedown', function () {
   makePageActive();
+  setAddressInputValues();
 });
 
 mainMapPin.addEventListener('keydown', function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
     makePageActive();
+    setAddressInputValues();
   }
 });
