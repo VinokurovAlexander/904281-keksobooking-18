@@ -17,8 +17,14 @@ var Locations = {
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 var NUMBER_OF_ANNOUNCEMENTS = 8;
-
-document.querySelector('.map').classList.remove('map--faded');
+var ApartamentPriceRange = {
+  MIN_PRICE: 0,
+  MAX_PRICE: 1000000
+};
+var RoomsAndGuestsRange = {
+  MIN_NUMBER: 1,
+  MAX_NUMBER: 5
+};
 
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
@@ -71,10 +77,10 @@ var generateAllAnnouncements = function (numberOfAnnouncements) {
       },
       offer: {
         title: 'Объявление о продаже',
-        price: getRandomNumberFromRange(10, 1000000),
+        price: getRandomNumberFromRange(ApartamentPriceRange.MIN_PRICE, ApartamentPriceRange.MAX_PRICE),
         type: getRandomValueFromArray(APARTAMENT_TYPES),
-        rooms: getRandomNumberFromRange(1, 5),
-        guests: getRandomNumberFromRange(1, 5),
+        rooms: getRandomNumberFromRange(RoomsAndGuestsRange.MIN_NUMBER, RoomsAndGuestsRange.MAX_NUMBER),
+        guests: getRandomNumberFromRange(RoomsAndGuestsRange.MIN_NUMBER, RoomsAndGuestsRange.MAX_NUMBER),
         checkin: getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
         checkout: getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
         features: FEATURES.slice(getRandomNumberFromRange(0, FEATURES.length)),
