@@ -1,6 +1,11 @@
 'use strict';
 
-var APARTAMENT_TYPES = ['palace', 'flat', 'house', 'bungalo'];
+var APARTAMENT_TYPES = {
+  flat: 'Квартира',
+  bungalo: 'Бунгало',
+  house: 'Дом',
+  palace: 'Дворец'
+};
 var CHECKIN_AND_CHECKOUT_TIME = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var APARTAMENT_PHOTOS = [
@@ -21,10 +26,8 @@ var ApartamentPriceRange = {
   MIN_PRICE: 0,
   MAX_PRICE: 1000000
 };
-var RoomsAndGuestsRange = {
-  MIN_NUMBER: 1,
-  MAX_NUMBER: 5
-};
+var ROOMS = ['1 комната', '2 комнаты', '3 комнаты', '100 комнат'];
+var GUESTS = ['для 3 гостей', 'для 2 гостей', 'для 1 гостя', 'не для гостей'];
 var ENTER_KEYCODE = 13;
 
 var map = document.querySelector('.map');
@@ -38,6 +41,9 @@ var announcementTemplate = document.querySelector('#card')
 var mapFiltersContainer = document.querySelector('.map__filters-container');
 var mainMapPin = map.querySelector('.map__pin--main');
 var form = document.querySelector('.ad-form');
+var Page = {
+  active: false
+};
 
 /**
  * Возвращает случайное число в диапазоне от min до max(не включая).
@@ -81,9 +87,9 @@ var generateAllAnnouncements = function (numberOfAnnouncements) {
       offer: {
         title: 'Объявление о продаже',
         price: getRandomNumberFromRange(ApartamentPriceRange.MIN_PRICE, ApartamentPriceRange.MAX_PRICE),
-        type: getRandomValueFromArray(APARTAMENT_TYPES),
-        rooms: getRandomNumberFromRange(RoomsAndGuestsRange.MIN_NUMBER, RoomsAndGuestsRange.MAX_NUMBER),
-        guests: getRandomNumberFromRange(RoomsAndGuestsRange.MIN_NUMBER, RoomsAndGuestsRange.MAX_NUMBER),
+        type: getRandomValueFromArray(Object.keys(APARTAMENT_TYPES)),
+        rooms: getRandomValueFromArray(ROOMS),
+        guests: getRandomValueFromArray(GUESTS),
         checkin: getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
         checkout: getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
         features: FEATURES.slice(getRandomNumberFromRange(0, FEATURES.length)),
@@ -146,22 +152,6 @@ var appendPins = function (pins) {
 };
 
 /**
- * Возвращает название апартаментов на русском языке.
- *
- * @param {string} engApartamentType - Название апартаментов на англ. языке.
- * @return {string} Название апартаментов на русском языке.
- */
-var getRusApartamentType = function (engApartamentType) {
-  var apartamentType = {
-    flat: 'Квартира',
-    bungalo: 'Бунгало',
-    house: 'Дом',
-    palace: 'Дворец'
-  };
-  return apartamentType[engApartamentType];
-};
-
-/**
  * Удаляет лишние удобства в карточке оффера.
  *
  * @param {object} elementTemplate - Шаблон карточки объявления.
@@ -212,8 +202,8 @@ var appendAnnouncements = function (announcementsArray) {
     announcementElement.querySelector('.popup__title').textContent = advert.offer.title;
     announcementElement.querySelector('.popup__text--address').textContent = advert.offer.address;
     announcementElement.querySelector('.popup__text--price').textContent = advert.offer.price + ' ₽/ночь';
-    announcementElement.querySelector('.popup__type').textContent = getRusApartamentType(advert.offer.type);
-    announcementElement.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' комнаты для ' + advert.offer.guests + ' гостей';
+    announcementElement.querySelector('.popup__type').textContent = APARTAMENT_TYPES[advert.offer.type];
+    announcementElement.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' ' + advert.offer.guests;
     announcementElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
     announcementElement.querySelector('.popup__description').textContent = advert.offer.description;
     announcementElement.querySelector('.popup__avatar').setAttribute('src', advert.author.avatar);
@@ -228,11 +218,6 @@ var appendAnnouncements = function (announcementsArray) {
   });
   map.insertBefore(fragment, mapFiltersContainer);
 };
-
-// var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
-// var htmlPins = renderPins(announcements);
-// appendPins(htmlPins);
-// appendAnnouncements(announcements);
 
 /**
  * Изменяет активность полей формы подачи объявления
@@ -264,9 +249,16 @@ var makeFormFieldsActive = function (isFormFieldsActive) {
  * Переводит страницу в активное состояние.
  */
 var makePageActive = function () {
+  var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
+  var htmlPins = renderPins(announcements);
+  console.log(announcements);
+
   map.classList.remove('map--faded');
   form.classList.remove('ad-form--disabled');
   makeFormFieldsActive(true);
+  appendPins(htmlPins);
+  appendAnnouncements(announcements);
+  Page.active = true;
 };
 
 /**
@@ -275,7 +267,7 @@ var makePageActive = function () {
 var setAddressInputValues = function () {
   var addressInput = form.querySelector('input[name="address"]');
 
-  addressInput.value = map.classList.contains('map--faded') ?
+  addressInput.value = Page.active ?
     '{' + (parseInt(mainMapPin.style.left, 10) + PIN_WIDTH / 2) + '}, {'
   + (parseInt(mainMapPin.style.top, 10) + PIN_HEIGHT / 2) + '}' :
     '{' + (parseInt(mainMapPin.style.left, 10) + PIN_WIDTH / 2) + '}, {'
@@ -286,13 +278,17 @@ makeFormFieldsActive(false);
 setAddressInputValues();
 
 mainMapPin.addEventListener('mousedown', function () {
-  makePageActive();
+  if (!Page.active) {
+    makePageActive();
+  }
   setAddressInputValues();
 });
 
 mainMapPin.addEventListener('keydown', function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
-    makePageActive();
+    if (!Page.active) {
+      makePageActive();
+    }
     setAddressInputValues();
   }
 });
