@@ -1,6 +1,11 @@
 'use strict';
 
-var APARTAMENT_TYPES = ['palace', 'flat', 'house', 'bungalo'];
+var APARTAMENT_TYPES = {
+  flat: 'Квартира',
+  bungalo: 'Бунгало',
+  house: 'Дом',
+  palace: 'Дворец'
+};
 var CHECKIN_AND_CHECKOUT_TIME = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var APARTAMENT_PHOTOS = [
@@ -10,15 +15,20 @@ var APARTAMENT_PHOTOS = [
 ];
 var Locations = {
   Y_MIN: 130,
-  Y_MAX: 630,
+  Y_MAX: 560,
   X_MIN: 100,
   X_MAX: 1100
 };
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
 var NUMBER_OF_ANNOUNCEMENTS = 8;
-
-document.querySelector('.map').classList.remove('map--faded');
+var ApartamentPriceRange = {
+  MIN_PRICE: 0,
+  MAX_PRICE: 1000000
+};
+var ROOMS = ['1 комната', '2 комнаты', '3 комнаты', '100 комнат'];
+var GUESTS = ['для 3 гостей', 'для 2 гостей', 'для 1 гостя', 'не для гостей'];
+var ENTER_KEYCODE = 13;
 
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
@@ -29,6 +39,12 @@ var announcementTemplate = document.querySelector('#card')
     .content
     .querySelector('article');
 var mapFiltersContainer = document.querySelector('.map__filters-container');
+var mainMapPin = map.querySelector('.map__pin--main');
+var form = document.querySelector('.ad-form');
+var Page = {
+  active: false
+};
+var submitFormBtn = form.querySelector('.ad-form__submit');
 
 /**
  * Возвращает случайное число в диапазоне от min до max(не включая).
@@ -71,10 +87,10 @@ var generateAllAnnouncements = function (numberOfAnnouncements) {
       },
       offer: {
         title: 'Объявление о продаже',
-        price: 1500,
-        type: getRandomValueFromArray(APARTAMENT_TYPES),
-        rooms: 4,
-        guests: 5,
+        price: getRandomNumberFromRange(ApartamentPriceRange.MIN_PRICE, ApartamentPriceRange.MAX_PRICE),
+        type: getRandomValueFromArray(Object.keys(APARTAMENT_TYPES)),
+        rooms: getRandomValueFromArray(ROOMS),
+        guests: getRandomValueFromArray(GUESTS),
         checkin: getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
         checkout: getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
         features: FEATURES.slice(getRandomNumberFromRange(0, FEATURES.length)),
@@ -137,26 +153,6 @@ var appendPins = function (pins) {
 };
 
 /**
- * Возвращает название апартаментов на русском языке.
- *
- * @param {string} engApartamentType - Название апартаментов на англ. языке.
- * @return {string} Название апартаментов на русском языке.
- */
-var getRusApartamentType = function (engApartamentType) {
-  if (engApartamentType === 'flat') {
-    return 'Квартира';
-  } else if (engApartamentType === 'bungalo') {
-    return 'Бунгало';
-  } else if (engApartamentType === 'house') {
-    return 'Дом';
-  } else if (engApartamentType === 'palace') {
-    return 'Дворец';
-  } else {
-    return engApartamentType;
-  }
-};
-
-/**
  * Удаляет лишние удобства в карточке оффера.
  *
  * @param {object} elementTemplate - Шаблон карточки объявления.
@@ -183,16 +179,14 @@ var addOfferPhotos = function (elementTemplate, arrayWithPhotos) {
   var offerImg = offerImgWrapper.querySelector('.popup__photo');
   var fragment = document.createDocumentFragment();
 
-  offerImg.setAttribute('src', arrayWithPhotos[0]);
+  offerImgWrapper.removeChild(offerImg);
 
-  if (arrayWithPhotos.length > 1) {
-    for (var i = 1; i < arrayWithPhotos.length; i++) {
-      var imgElement = offerImg.cloneNode(true);
-      imgElement.setAttribute('src', arrayWithPhotos[i]);
-      fragment.appendChild(imgElement);
-    }
-    offerImgWrapper.appendChild(fragment);
-  }
+  arrayWithPhotos.forEach(function (photoUrl) {
+    var imgElement = offerImg.cloneNode(true);
+    imgElement.setAttribute('src', photoUrl);
+    fragment.appendChild(imgElement);
+  });
+  offerImgWrapper.appendChild(fragment);
 };
 
 /**
@@ -208,9 +202,9 @@ var appendAnnouncements = function (announcementsArray) {
 
     announcementElement.querySelector('.popup__title').textContent = advert.offer.title;
     announcementElement.querySelector('.popup__text--address').textContent = advert.offer.address;
-    announcementElement.querySelector('.popup__text--price').innerHTML = advert.offer.price + '&#8381;' + '/ночь';
-    announcementElement.querySelector('.popup__type').textContent = getRusApartamentType(advert.offer.type);
-    announcementElement.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' комнаты для ' + advert.offer.guests + ' гостей';
+    announcementElement.querySelector('.popup__text--price').textContent = advert.offer.price + ' ₽/ночь';
+    announcementElement.querySelector('.popup__type').textContent = APARTAMENT_TYPES[advert.offer.type];
+    announcementElement.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' ' + advert.offer.guests;
     announcementElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
     announcementElement.querySelector('.popup__description').textContent = advert.offer.description;
     announcementElement.querySelector('.popup__avatar').setAttribute('src', advert.author.avatar);
@@ -226,7 +220,101 @@ var appendAnnouncements = function (announcementsArray) {
   map.insertBefore(fragment, mapFiltersContainer);
 };
 
-var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
-var htmlPins = renderPins(announcements);
-appendPins(htmlPins);
-appendAnnouncements(announcements);
+/**
+ * Изменяет активность полей формы подачи объявления
+ * и формы с фильтрами на карте.
+ *
+ * @param {boolean} isFormFieldsActive - если true, поля активны для ввода,
+ * иначе - false.
+ */
+var makeFormFieldsActive = function (isFormFieldsActive) {
+  var formElements = {
+    fieldsets: form.querySelectorAll('.ad-form__element'),
+    mapFilters: map.querySelectorAll('.map__filter')
+  };
+
+  for (var elements in formElements) {
+    if (formElements.hasOwnProperty(elements)) {
+      formElements[elements].forEach(function (element) {
+        if (isFormFieldsActive) {
+          element.removeAttribute('disabled');
+        } else {
+          element.setAttribute('disabled', true);
+        }
+      });
+    }
+  }
+};
+
+/**
+ * Переводит страницу в активное состояние.
+ */
+var makePageActive = function () {
+  var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
+  var htmlPins = renderPins(announcements);
+
+  map.classList.remove('map--faded');
+  form.classList.remove('ad-form--disabled');
+  makeFormFieldsActive(true);
+  appendPins(htmlPins);
+  appendAnnouncements(announcements);
+  Page.active = true;
+};
+
+/**
+ * Устанавливает значения поля ввода адреса.
+ */
+var setAddressInputValues = function () {
+  var addressInput = form.querySelector('input[name="address"]');
+
+  addressInput.value = Page.active ?
+    '{' + (parseInt(mainMapPin.style.left, 10) + PIN_WIDTH / 2) + '}, {'
+  + (parseInt(mainMapPin.style.top, 10) + PIN_HEIGHT / 2) + '}' :
+    '{' + (parseInt(mainMapPin.style.left, 10) + PIN_WIDTH / 2) + '}, {'
+  + (parseInt(mainMapPin.style.top, 10) + PIN_HEIGHT) + '}';
+};
+
+var validityRoomsAndGuests = function () {
+  var roomsUserValue = form.querySelector('select[name="rooms"] option:checked').value;
+  var guestsSelect = form.querySelector('select[name="capacity"]');
+  var guestsUserValue = guestsSelect.querySelector('option:checked').value;
+
+  if (roomsUserValue === '100' && guestsUserValue !== '0') {
+    guestsSelect.setCustomValidity('Данное количество комнат предназначено не для гостей');
+  } else if (guestsUserValue === '0' && roomsUserValue !== '100') {
+    guestsSelect.setCustomValidity('Для данного количества гостей предназначено только 100 комнат');
+  } else if (guestsUserValue !== '100' && (guestsUserValue > roomsUserValue)) {
+    guestsSelect.setCustomValidity('Максимальное количество гостей: ' + roomsUserValue);
+  } else {
+    guestsSelect.setCustomValidity('');
+  }
+};
+
+makeFormFieldsActive(false);
+setAddressInputValues();
+
+mainMapPin.addEventListener('mousedown', function () {
+  if (!Page.active) {
+    makePageActive();
+  }
+  setAddressInputValues();
+});
+
+mainMapPin.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    if (!Page.active) {
+      makePageActive();
+    }
+    setAddressInputValues();
+  }
+});
+
+submitFormBtn.addEventListener('click', function () {
+  validityRoomsAndGuests();
+});
+
+submitFormBtn.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    validityRoomsAndGuests();
+  }
+});
