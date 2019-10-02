@@ -238,14 +238,14 @@ var appendAnnouncements = function (announcementsArray) {
  * иначе - false.
  */
 var makeFormFieldsActive = function (isFormFieldsActive) {
-  var formElements = {
+  var formFields = {
     fieldsets: form.querySelectorAll('.ad-form__element'),
     mapFilters: map.querySelectorAll('.map__filter')
   };
 
-  for (var elements in formElements) {
-    if (formElements.hasOwnProperty(elements)) {
-      formElements[elements].forEach(function (element) {
+  for (var fields in formFields) {
+    if (formFields.hasOwnProperty(fields)) {
+      formFields[fields].forEach(function (element) {
         if (isFormFieldsActive) {
           element.removeAttribute('disabled');
         } else {
