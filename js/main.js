@@ -1,10 +1,10 @@
 'use strict';
 
-var APARTAMENT_TYPES = {
-  flat: 'Квартира',
-  bungalo: 'Бунгало',
-  house: 'Дом',
-  palace: 'Дворец'
+var ApartamentTypes = {
+  FLAT: 'Квартира',
+  BUNGALO: 'Бунгало',
+  HOUSE: 'Дом',
+  PALACE: 'Дворец'
 };
 var CHECKIN_AND_CHECKOUT_TIME = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
@@ -41,7 +41,7 @@ var announcementTemplate = document.querySelector('#card')
 var mapFiltersContainer = document.querySelector('.map__filters-container');
 var mainMapPin = map.querySelector('.map__pin--main');
 var form = document.querySelector('.ad-form');
-var Page = {
+var page = {
   active: false
 };
 var submitFormBtn = form.querySelector('.ad-form__submit');
@@ -88,7 +88,7 @@ var generateAllAnnouncements = function (numberOfAnnouncements) {
       offer: {
         title: 'Объявление о продаже',
         price: getRandomNumberFromRange(ApartamentPriceRange.MIN_PRICE, ApartamentPriceRange.MAX_PRICE),
-        type: getRandomValueFromArray(Object.keys(APARTAMENT_TYPES)),
+        type: getRandomValueFromArray(Object.keys(ApartamentTypes)),
         rooms: getRandomValueFromArray(ROOMS),
         guests: getRandomValueFromArray(GUESTS),
         checkin: getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
@@ -146,9 +146,9 @@ var renderPins = function (announcements) {
 var appendPins = function (pins) {
   var fragment = document.createDocumentFragment();
 
-  for (var i = 0; i < pins.length; i++) {
-    fragment.appendChild(pins[i]);
-  }
+  pins.forEach(function (pin) {
+    fragment.appendChild(pin);
+  });
   mapPins.appendChild(fragment);
 };
 
@@ -203,7 +203,7 @@ var appendAnnouncements = function (announcementsArray) {
     announcementElement.querySelector('.popup__title').textContent = advert.offer.title;
     announcementElement.querySelector('.popup__text--address').textContent = advert.offer.address;
     announcementElement.querySelector('.popup__text--price').textContent = advert.offer.price + ' ₽/ночь';
-    announcementElement.querySelector('.popup__type').textContent = APARTAMENT_TYPES[advert.offer.type];
+    announcementElement.querySelector('.popup__type').textContent = ApartamentTypes[advert.offer.type];
     announcementElement.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' ' + advert.offer.guests;
     announcementElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
     announcementElement.querySelector('.popup__description').textContent = advert.offer.description;
@@ -258,7 +258,7 @@ var makePageActive = function () {
   makeFormFieldsActive(true);
   appendPins(htmlPins);
   appendAnnouncements(announcements);
-  Page.active = true;
+  page.active = true;
 };
 
 /**
@@ -267,13 +267,17 @@ var makePageActive = function () {
 var setAddressInputValues = function () {
   var addressInput = form.querySelector('input[name="address"]');
 
-  addressInput.value = Page.active ?
+  addressInput.value = page.active ?
     '{' + (parseInt(mainMapPin.style.left, 10) + PIN_WIDTH / 2) + '}, {'
   + (parseInt(mainMapPin.style.top, 10) + PIN_HEIGHT / 2) + '}' :
     '{' + (parseInt(mainMapPin.style.left, 10) + PIN_WIDTH / 2) + '}, {'
   + (parseInt(mainMapPin.style.top, 10) + PIN_HEIGHT) + '}';
 };
 
+/**
+ * Производится проверка соответствия заполненных данных о
+ * количестве комнат и гостей.
+ */
 var validityRoomsAndGuests = function () {
   var roomsUserValue = form.querySelector('select[name="rooms"] option:checked').value;
   var guestsSelect = form.querySelector('select[name="capacity"]');
@@ -294,7 +298,7 @@ makeFormFieldsActive(false);
 setAddressInputValues();
 
 mainMapPin.addEventListener('mousedown', function () {
-  if (!Page.active) {
+  if (!page.active) {
     makePageActive();
   }
   setAddressInputValues();
@@ -302,7 +306,7 @@ mainMapPin.addEventListener('mousedown', function () {
 
 mainMapPin.addEventListener('keydown', function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
-    if (!Page.active) {
+    if (!page.active) {
       makePageActive();
     }
     setAddressInputValues();
