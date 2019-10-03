@@ -1,10 +1,10 @@
 'use strict';
 
-var APARTAMENT_TYPES = {
-  flat: 'Квартира',
-  bungalo: 'Бунгало',
-  house: 'Дом',
-  palace: 'Дворец'
+var ApartamentTypes = {
+  FLAT: 'Квартира',
+  BUNGALO: 'Бунгало',
+  HOUSE: 'Дом',
+  PALACE: 'Дворец'
 };
 var CHECKIN_AND_CHECKOUT_TIME = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
@@ -29,9 +29,16 @@ var ApartamentPriceRange = {
 var ROOMS = ['1 комната', '2 комнаты', '3 комнаты', '100 комнат'];
 var GUESTS = ['для 3 гостей', 'для 2 гостей', 'для 1 гостя', 'не для гостей'];
 var ENTER_KEYCODE = 13;
-
+var ESC_KEYCODE = 27;
+var MinPriceAndTypes = {
+  bungalo: 0,
+  flat: 1000,
+  house: 5000,
+  palace: 10000
+};
+var form = document.querySelector('.ad-form');
 var map = document.querySelector('.map');
-var mapPins = document.querySelector('.map__pins');
+var mapPinsWrapper = document.querySelector('.map__pins');
 var pinTemplate = document.querySelector('#pin')
     .content
     .querySelector('button');
@@ -40,11 +47,13 @@ var announcementTemplate = document.querySelector('#card')
     .querySelector('article');
 var mapFiltersContainer = document.querySelector('.map__filters-container');
 var mainMapPin = map.querySelector('.map__pin--main');
-var form = document.querySelector('.ad-form');
-var Page = {
+var page = {
   active: false
 };
 var submitFormBtn = form.querySelector('.ad-form__submit');
+var apartamentTypeSelect = form.querySelector('select[name="type"]');
+var currentApartamentTypeValue = apartamentTypeSelect.querySelector('option:checked').value;
+var priceInput = form.querySelector('#price');
 
 /**
  * Возвращает случайное число в диапазоне от min до max(не включая).
@@ -88,7 +97,7 @@ var generateAllAnnouncements = function (numberOfAnnouncements) {
       offer: {
         title: 'Объявление о продаже',
         price: getRandomNumberFromRange(ApartamentPriceRange.MIN_PRICE, ApartamentPriceRange.MAX_PRICE),
-        type: getRandomValueFromArray(Object.keys(APARTAMENT_TYPES)),
+        type: getRandomValueFromArray(Object.keys(ApartamentTypes)),
         rooms: getRandomValueFromArray(ROOMS),
         guests: getRandomValueFromArray(GUESTS),
         checkin: getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
@@ -146,10 +155,10 @@ var renderPins = function (announcements) {
 var appendPins = function (pins) {
   var fragment = document.createDocumentFragment();
 
-  for (var i = 0; i < pins.length; i++) {
-    fragment.appendChild(pins[i]);
-  }
-  mapPins.appendChild(fragment);
+  pins.forEach(function (pin) {
+    fragment.appendChild(pin);
+  });
+  mapPinsWrapper.appendChild(fragment);
 };
 
 /**
@@ -203,11 +212,12 @@ var appendAnnouncements = function (announcementsArray) {
     announcementElement.querySelector('.popup__title').textContent = advert.offer.title;
     announcementElement.querySelector('.popup__text--address').textContent = advert.offer.address;
     announcementElement.querySelector('.popup__text--price').textContent = advert.offer.price + ' ₽/ночь';
-    announcementElement.querySelector('.popup__type').textContent = APARTAMENT_TYPES[advert.offer.type];
+    announcementElement.querySelector('.popup__type').textContent = ApartamentTypes[advert.offer.type];
     announcementElement.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' ' + advert.offer.guests;
     announcementElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
     announcementElement.querySelector('.popup__description').textContent = advert.offer.description;
     announcementElement.querySelector('.popup__avatar').setAttribute('src', advert.author.avatar);
+    announcementElement.classList.add('popup--closed');
 
     var deleteFeatures = FEATURES.filter(function (feature) {
       return !advert.offer.features.includes(feature);
@@ -228,14 +238,14 @@ var appendAnnouncements = function (announcementsArray) {
  * иначе - false.
  */
 var makeFormFieldsActive = function (isFormFieldsActive) {
-  var formElements = {
+  var formFields = {
     fieldsets: form.querySelectorAll('.ad-form__element'),
     mapFilters: map.querySelectorAll('.map__filter')
   };
 
-  for (var elements in formElements) {
-    if (formElements.hasOwnProperty(elements)) {
-      formElements[elements].forEach(function (element) {
+  for (var fields in formFields) {
+    if (formFields.hasOwnProperty(fields)) {
+      formFields[fields].forEach(function (element) {
         if (isFormFieldsActive) {
           element.removeAttribute('disabled');
         } else {
@@ -247,9 +257,9 @@ var makeFormFieldsActive = function (isFormFieldsActive) {
 };
 
 /**
- * Переводит страницу в активное состояние.
+ * Переводит форму в активное состояние.
  */
-var makePageActive = function () {
+var makeFormActive = function () {
   var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
   var htmlPins = renderPins(announcements);
 
@@ -258,23 +268,29 @@ var makePageActive = function () {
   makeFormFieldsActive(true);
   appendPins(htmlPins);
   appendAnnouncements(announcements);
-  Page.active = true;
+  page.active = true;
 };
 
 /**
  * Устанавливает значения поля ввода адреса.
+ * При НЕактивной странице указываются координаты центра главного пина,
+ * при активной странице указываются координаты острого конца пина.
  */
 var setAddressInputValues = function () {
   var addressInput = form.querySelector('input[name="address"]');
 
-  addressInput.value = Page.active ?
+  addressInput.value = page.active ?
     '{' + (parseInt(mainMapPin.style.left, 10) + PIN_WIDTH / 2) + '}, {'
   + (parseInt(mainMapPin.style.top, 10) + PIN_HEIGHT / 2) + '}' :
     '{' + (parseInt(mainMapPin.style.left, 10) + PIN_WIDTH / 2) + '}, {'
   + (parseInt(mainMapPin.style.top, 10) + PIN_HEIGHT) + '}';
 };
 
-var validityRoomsAndGuests = function () {
+/**
+ * Производится проверка соответствия заполненных данных о
+ * количестве комнат и гостей.
+ */
+var validateRoomsAndGuests = function () {
   var roomsUserValue = form.querySelector('select[name="rooms"] option:checked').value;
   var guestsSelect = form.querySelector('select[name="capacity"]');
   var guestsUserValue = guestsSelect.querySelector('option:checked').value;
@@ -290,31 +306,156 @@ var validityRoomsAndGuests = function () {
   }
 };
 
+/**
+ * Функция для обработки событий при нажатию на ESC.
+ *
+ * @param {object} evt - объект события
+ * @param {function} action - фукнция, которую необходимо выполнить
+ */
+var isEscEvent = function (evt, action) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    action();
+  }
+};
+
+/**
+ * Функция для обработки событий при нажатию на ENTER.
+ *
+ * @param {object} evt - объект события
+ * @param {function} action - фукнция, которую необходимо выполнить
+ */
+var isEnterEvent = function (evt, action) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    action();
+  }
+};
+
+/**
+ * Добавляет обработчики для пинов на событие click.
+ */
+var addMapPinsClickHandler = function () {
+  var mapPins = mapPinsWrapper.querySelectorAll('button[type="button"]');
+
+  mapPins.forEach(function (pin, index) {
+    pin.addEventListener('click', function () {
+      closeAd();
+      openAd(index);
+    });
+  });
+};
+
+/**
+ * Открывает карточку с объявлением.
+ *
+ * @param {number} itemNumber - порядковый номер карточки.
+ */
+var openAd = function (itemNumber) {
+  var adverts = map.querySelectorAll('.popup');
+  adverts[itemNumber].classList.remove('popup--closed');
+  addCloseAdvertsClickHandler();
+};
+
+/**
+ * Закрывает карточку с объявлением.
+ */
+var closeAd = function () {
+  var adverts = map.querySelectorAll('.popup');
+  adverts.forEach(function (advert) {
+    if (!advert.classList.contains('popup--closed')) {
+      advert.classList.add('popup--closed');
+    }
+  });
+};
+
+/**
+ * Добавляет обработчики на кнопки закрытия карточек с объявлениями.
+ */
+var addCloseAdvertsClickHandler = function () {
+  var advertsCloseBtn = map.querySelectorAll('.popup__close');
+  advertsCloseBtn.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      closeAd();
+      btn.removeEventListener('keydown', isEscEvent);
+    });
+  });
+};
+
+/**
+ * Добавление обрабочика на поле "Тип жилья" для отображения
+ * соответствующего placeholder у поля "Цена за ночь".
+ */
+var addChangeHandlerOnApartamentType = function () {
+  apartamentTypeSelect.addEventListener('change', function () {
+    currentApartamentTypeValue = apartamentTypeSelect.querySelector('option:checked').value;
+    priceInput.setAttribute('placeholder', MinPriceAndTypes[currentApartamentTypeValue]);
+  });
+};
+
+/**
+ * Синхронизация между полями "Время заезда и выезда".
+ */
+var addCheckInAndCheckOutTimeChangeHandler = function () {
+  var timein = form.querySelector('#timein');
+  var timeout = form.querySelector('#timeout');
+
+  timein.addEventListener('change', function () {
+    timeout.value = timein.value;
+  });
+
+  timeout.addEventListener('change', function () {
+    timein.value = timeout.value;
+  });
+};
+
+/**
+ * Проверка на соответсвие поля "Тип жилья" и "Цена за ночь".
+ */
+var validatePriceAndApartamentType = function () {
+  if (priceInput.value < MinPriceAndTypes[currentApartamentTypeValue]) {
+    priceInput.setCustomValidity('Минимальная цена за ночь: ' + MinPriceAndTypes[currentApartamentTypeValue]);
+  } else {
+    priceInput.setCustomValidity('');
+  }
+};
+
+/**
+ * Функция для активации всей страницы.
+ */
+var activatePage = function () {
+  if (!page.active) {
+    makeFormActive();
+    addMapPinsClickHandler();
+    addChangeHandlerOnApartamentType();
+    addCheckInAndCheckOutTimeChangeHandler();
+    setAddressInputValues();
+  }
+};
+
+/**
+ * Функция для валидации формы.
+ */
+var validate = function () {
+  validateRoomsAndGuests();
+  validatePriceAndApartamentType();
+};
+
 makeFormFieldsActive(false);
 setAddressInputValues();
 
 mainMapPin.addEventListener('mousedown', function () {
-  if (!Page.active) {
-    makePageActive();
-  }
-  setAddressInputValues();
+  activatePage();
 });
-
 mainMapPin.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    if (!Page.active) {
-      makePageActive();
-    }
-    setAddressInputValues();
-  }
+  isEnterEvent(evt, activatePage);
 });
 
 submitFormBtn.addEventListener('click', function () {
-  validityRoomsAndGuests();
+  validate();
+});
+submitFormBtn.addEventListener('keydown', function (evt) {
+  isEnterEvent(evt, validate);
 });
 
-submitFormBtn.addEventListener('keydown', function (evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    validityRoomsAndGuests();
-  }
+map.addEventListener('keydown', function (evt) {
+  isEscEvent(evt, closeAd);
 });

@@ -1016,6 +1016,10 @@ fieldset {
   background-color: #ffffff;
 }
 
+.popup--closed {
+  display: none;
+}
+
 .popup__avatar {
   position: absolute;
   bottom: 100%;
