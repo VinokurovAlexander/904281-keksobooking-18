@@ -446,14 +446,14 @@ mainMapPin.addEventListener('mousedown', function () {
   activatePage();
 });
 mainMapPin.addEventListener('keydown', function (evt) {
-  isEnterEvent(evt, activatePage());
+  isEnterEvent(evt, activatePage);
 });
 
 submitFormBtn.addEventListener('click', function () {
   validate();
 });
 submitFormBtn.addEventListener('keydown', function (evt) {
-  isEnterEvent(evt, validate());
+  isEnterEvent(evt, validate);
 });
 
 map.addEventListener('keydown', function (evt) {
