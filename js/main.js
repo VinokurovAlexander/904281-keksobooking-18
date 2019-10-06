@@ -331,27 +331,13 @@ var isEnterEvent = function (evt, action) {
 };
 
 /**
- * Добавляет обработчики для пинов на событие click.
- */
-var addMapPinsClickHandler = function () {
-  var mapPins = mapPinsWrapper.querySelectorAll('button[type="button"]');
-
-  mapPins.forEach(function (pin, index) {
-    pin.addEventListener('click', function () {
-      closeAd();
-      openAd(index);
-    });
-  });
-};
-
-/**
  * Открывает карточку с объявлением.
  *
  * @param {number} itemNumber - порядковый номер карточки.
  */
 var openAd = function (itemNumber) {
   var adverts = map.querySelectorAll('.popup');
-  adverts[itemNumber].classList.remove('popup--closed');
+  adverts[itemNumber - 1].classList.remove('popup--closed');
   addCloseAdvertsClickHandler();
 };
 
@@ -424,7 +410,6 @@ var validatePriceAndApartamentType = function () {
 var activatePage = function () {
   if (!page.active) {
     makeFormActive();
-    addMapPinsClickHandler();
     addChangeHandlerOnApartamentType();
     addCheckInAndCheckOutTimeChangeHandler();
     setAddressInputValues();
@@ -437,6 +422,18 @@ var activatePage = function () {
 var validate = function () {
   validateRoomsAndGuests();
   validatePriceAndApartamentType();
+};
+
+/**
+ * Функция возвращает порядковый номер из пути
+ * к аватару (img/avatars/user04.png).
+ *
+ * @param {string} str - Строка из которой нужно получить число.
+ * @return {number} - Порядковый номер.
+ */
+var getPinIndex = function (str) {
+  var regular = /\d+/;
+  return str.match(regular)[0].slice(1);
 };
 
 makeFormFieldsActive(false);
@@ -458,4 +455,11 @@ submitFormBtn.addEventListener('keydown', function (evt) {
 
 map.addEventListener('keydown', function (evt) {
   isEscEvent(evt, closeAd);
+});
+
+map.addEventListener('click', function (evt) {
+  if (evt.target.className === 'map__pin-image') {
+    closeAd();
+    openAd(getPinIndex(evt.target.getAttribute('src')));
+  }
 });
