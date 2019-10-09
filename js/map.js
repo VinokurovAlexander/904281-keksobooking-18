@@ -1,14 +1,16 @@
 'use strict';
 
 (function () {
+  var NUMBER_REGEX = /\d+/;
+
   var mapPinsWrapper = document.querySelector('.map__pins');
   var map = document.querySelector('.map');
   var mapFiltersContainer = document.querySelector('.map__filters-container');
-  var mainMapPin = map.querySelector('.map__pin--main');
+  var mainPin = map.querySelector('.map__pin--main');
 
   window.map = {
-    mapSection: map,
-    mainMapPin: mainMapPin,
+    section: map,
+    mainPin: mainPin,
 
     /**
      * Добавляет пины офферов на карту.
@@ -54,7 +56,7 @@
    * Закрывает карточку с объявлением.
    */
   var closeAd = function () {
-    var adverts = window.map.mapSection.querySelectorAll('.popup');
+    var adverts = window.map.section.querySelectorAll('.popup');
     adverts.forEach(function (advert) {
       if (!advert.classList.contains('popup--closed')) {
         advert.classList.add('popup--closed');
@@ -66,7 +68,7 @@
    * Добавляет обработчики на кнопки закрытия карточек с объявлениями.
    */
   var addCloseAdvertsClickHandler = function () {
-    var advertsCloseBtn = window.map.mapSection.querySelectorAll('.popup__close');
+    var advertsCloseBtn = window.map.section.querySelectorAll('.popup__close');
     advertsCloseBtn.forEach(function (btn) {
       btn.addEventListener('click', function () {
         closeAd();
@@ -83,13 +85,13 @@
    * @return {number} - Порядковый номер.
    */
   var getPinIndex = function (str) {
-    return str.match(/\d+/)[0].slice(1);
+    return str.match(NUMBER_REGEX)[0].slice(1);
   };
 
-  mainMapPin.addEventListener('mousedown', function () {
+  mainPin.addEventListener('mousedown', function () {
     window.form.makeFormActive();
   });
-  mainMapPin.addEventListener('keydown', function (evt) {
+  mainPin.addEventListener('keydown', function (evt) {
     window.util.isEnterEvent(evt, window.form.makeFormActive);
   });
 

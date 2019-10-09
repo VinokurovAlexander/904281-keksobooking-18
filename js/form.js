@@ -26,7 +26,7 @@
         window.map.appendPins(htmlPins);
         window.map.appendCards(htmlCards);
 
-        window.map.mapSection.classList.remove('map--faded');
+        window.map.section.classList.remove('map--faded');
         form.classList.remove('ad-form--disabled');
 
         makeFormFieldsActive(true);
@@ -49,7 +49,7 @@
   var makeFormFieldsActive = function (isFormFieldsActive) {
     var formFields = {
       fieldsets: form.querySelectorAll('.ad-form__element'),
-      mapFilters: window.map.mapSection.querySelectorAll('.map__filter')
+      mapFilters: window.map.section.querySelectorAll('.map__filter')
     };
 
     for (var fields in formFields) {
@@ -88,10 +88,10 @@
     var addressInput = form.querySelector('input[name="address"]');
 
     addressInput.value = page.active ?
-      '{' + (parseInt(window.map.mainMapPin.style.left, 10) + window.pin.PIN_WIDTH / 2) + '}, {'
-    + (parseInt(window.map.mainMapPin.style.top, 10) + window.pin.PIN_HEIGHT / 2) + '}' :
-      '{' + (parseInt(window.map.mainMapPin.style.left, 10) + window.pin.PIN_WIDTH / 2) + '}, {'
-    + (parseInt(window.map.mainMapPin.style.top, 10) + window.pin.PIN_HEIGHT) + '}';
+      '{' + (parseInt(window.map.mainPin.style.left, 10) + window.pin.PIN_WIDTH / 2) + '}, {'
+    + (parseInt(window.map.mainPin.style.top, 10) + window.pin.PIN_HEIGHT / 2) + '}' :
+      '{' + (parseInt(window.map.mainPin.style.left, 10) + window.pin.PIN_WIDTH / 2) + '}, {'
+    + (parseInt(window.map.mainPin.style.top, 10) + window.pin.PIN_HEIGHT) + '}';
   };
 
   /**
