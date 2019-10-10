@@ -7,9 +7,13 @@
   var pinTemplate = document.querySelector('#pin')
       .content
       .querySelector('button');
+  var mainPin = document.querySelector('.map__pin--main');
+
   window.pin = {
     PIN_WIDTH: PIN_WIDTH,
     PIN_HEIGHT: PIN_HEIGHT,
+
+    main: mainPin,
 
     /**
      * Генерирует массив с нодами пинов офферов.
@@ -38,6 +42,25 @@
         pins.push(pinElement);
       });
       return pins;
+    },
+
+    /**
+     * Добавляет обработчик для главного пина.
+     *
+     */
+    addMainPinMousemoveHandler: function () {
+      mainPin.addEventListener('mousedown', function () {
+        console.log('mousedown');
+      });
     }
   };
+
+  mainPin.addEventListener('click', function (evt) {
+    if (evt.which === 1) {
+      window.page.makeActive();
+    }
+  });
+  mainPin.addEventListener('keydown', function (evt) {
+    window.util.isEnterEvent(evt, window.form.makeActive);
+  });
 })();

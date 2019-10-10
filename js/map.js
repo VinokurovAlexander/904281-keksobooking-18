@@ -6,11 +6,13 @@
   var mapPinsWrapper = document.querySelector('.map__pins');
   var map = document.querySelector('.map');
   var mapFiltersContainer = document.querySelector('.map__filters-container');
-  var mainPin = map.querySelector('.map__pin--main');
 
   window.map = {
     section: map,
-    mainPin: mainPin,
+
+    makeActive: function () {
+      map.classList.remove('map--faded');
+    },
 
     /**
      * Добавляет пины офферов на карту.
@@ -87,14 +89,6 @@
   var getPinIndex = function (str) {
     return str.match(NUMBER_REGEX)[0].slice(1);
   };
-
-  mainPin.addEventListener('mousedown', function () {
-    window.form.makeFormActive();
-  });
-  mainPin.addEventListener('keydown', function (evt) {
-    window.util.isEnterEvent(evt, window.form.makeFormActive);
-  });
-
 
   map.addEventListener('keydown', function (evt) {
     window.util.isEscEvent(evt, closeAd);

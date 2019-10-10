@@ -26,25 +26,36 @@
     X_MIN: 100,
     X_MAX: 1100
   };
+  var NUMBER_OF_ANNOUNCEMENTS = 8;
+
   window.data = {
     ApartamentTypes: ApartamentTypes,
     FEATURES: FEATURES,
 
-    /**
-     * Генерирует массив с объектами офферов.
-     *
-     * @param {number} numberOfAnnouncements - Количество генерируемых офферов.
-     * @return {array} Массив с объектами офферов.
-     */
-    generateAllAnnouncements: function (numberOfAnnouncements) {
-      var announcements = [];
+    generateAll: function () {
+      var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
+      var htmlPins = window.pin.generatePins(announcements);
+      var htmlCards = window.card.generateCards(announcements);
 
-      for (var i = 1; i <= numberOfAnnouncements; i++) {
-        var announcement = generateAnnouncement(i);
-        announcements.push(announcement);
-      }
-      return announcements;
+      window.map.appendPins(htmlPins);
+      window.map.appendCards(htmlCards);
     }
+  };
+
+  /**
+   * Генерирует массив с объектами офферов.
+   *
+   * @param {number} numberOfAnnouncements - Количество генерируемых офферов.
+   * @return {array} Массив с объектами офферов.
+   */
+  var generateAllAnnouncements = function (numberOfAnnouncements) {
+    var announcements = [];
+
+    for (var i = 1; i <= numberOfAnnouncements; i++) {
+      var announcement = generateAnnouncement(i);
+      announcements.push(announcement);
+    }
+    return announcements;
   };
 
   /**
