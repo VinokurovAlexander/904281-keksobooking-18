@@ -13,11 +13,9 @@
      * @return {array} Массив с нодами карточек офферов для карты.
      */
     generateCards: function (announcements) {
-      var cards = [];
-      cards = announcements.map(function (advert) {
+      return announcements.map(function (advert) {
         return generateCard(advert);
       });
-      return cards;
     }
   };
 
