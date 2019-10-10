@@ -48,9 +48,55 @@
      * Добавляет обработчик для главного пина.
      *
      */
-    addMainPinMousemoveHandler: function () {
-      mainPin.addEventListener('mousedown', function () {
-        console.log('mousedown');
+    addMousemoveHandler: function () {
+      mainPin.addEventListener('mousedown', function (evt) {
+        var coords = {
+          x: evt.clientX,
+          y: evt.clientY
+        };
+
+        var onMouseMove = function (moveEvt) {
+          var shift = {
+            x: coords.x - moveEvt.clientX,
+            y: coords.y - moveEvt.clientY,
+          };
+
+          coords = {
+            x: moveEvt.clientX,
+            y: moveEvt.clientY
+          };
+
+          var pinStyleCoords = {
+            x: mainPin.offsetLeft - shift.x,
+            y: mainPin.offsetTop - shift.y
+          };
+
+          if (pinStyleCoords.x > window.data.Locations.X_MAX) {
+            pinStyleCoords.x = window.data.Locations.X_MAX;
+          } else if (pinStyleCoords.x < window.data.Locations.X_MIN) {
+            pinStyleCoords.x = window.data.Locations.X_MIN;
+          }
+
+          if (pinStyleCoords.y > window.data.Locations.Y_MAX) {
+            pinStyleCoords.y = window.data.Locations.Y_MAX;
+          } else if (pinStyleCoords.y < window.data.Locations.Y_MIN) {
+            pinStyleCoords.y = window.data.Locations.Y_MIN;
+          }
+
+          mainPin.style.left = pinStyleCoords.x + 'px';
+          mainPin.style.top = pinStyleCoords.y + 'px';
+
+          window.form.setAddressInputValues();
+        };
+
+        var onMouseUp = function () {
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+          window.form.setAddressInputValues();
+        };
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
       });
     }
   };

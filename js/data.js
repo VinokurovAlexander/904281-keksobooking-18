@@ -31,7 +31,12 @@
   window.data = {
     ApartamentTypes: ApartamentTypes,
     FEATURES: FEATURES,
+    Locations: Locations,
 
+    /**
+     * Генерирует и добавляет на карту пины и карточки офферов.
+     *
+     */
     generateAll: function () {
       var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
       var htmlPins = window.pin.generatePins(announcements);

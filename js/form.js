@@ -7,9 +7,7 @@
     house: 5000,
     palace: 10000
   };
-  var page = {
-    active: false
-  };
+
   var form = document.querySelector('.ad-form');
 
   window.form = {
@@ -23,8 +21,22 @@
       addChangeHandlerOnApartamentType();
       addCheckInAndCheckOutTimeChangeHandler();
 
-      page.active = true;
-      setAddressInputValues();
+      this.setAddressInputValues();
+    },
+
+    /**
+     * Устанавливает значения поля ввода адреса.
+     * При НЕактивной странице указываются координаты центра главного пина,
+     * при активной странице указываются координаты острого конца пина.
+     */
+    setAddressInputValues: function () {
+      var addressInput = form.querySelector('input[name="address"]');
+
+      addressInput.value = window.page.active ?
+        '{' + (parseInt(window.pin.main.style.left, 10) + window.pin.PIN_WIDTH / 2) + '}, {'
+      + (parseInt(window.pin.main.style.top, 10) + window.pin.PIN_HEIGHT / 2) + '}' :
+        '{' + (parseInt(window.pin.main.style.left, 10) + window.pin.PIN_WIDTH / 2) + '}, {'
+      + (parseInt(window.pin.main.style.top, 10) + window.pin.PIN_HEIGHT) + '}';
     }
   };
 
@@ -66,21 +78,6 @@
       currentApartamentTypeValue = apartamentTypeSelect.querySelector('option:checked').value;
       priceInput.setAttribute('placeholder', MinPriceAndTypes[currentApartamentTypeValue]);
     });
-  };
-
-  /**
-   * Устанавливает значения поля ввода адреса.
-   * При НЕактивной странице указываются координаты центра главного пина,
-   * при активной странице указываются координаты острого конца пина.
-   */
-  var setAddressInputValues = function () {
-    var addressInput = form.querySelector('input[name="address"]');
-
-    addressInput.value = page.active ?
-      '{' + (parseInt(window.pin.main.style.left, 10) + window.pin.PIN_WIDTH / 2) + '}, {'
-    + (parseInt(window.pin.main.style.top, 10) + window.pin.PIN_HEIGHT / 2) + '}' :
-      '{' + (parseInt(window.pin.main.style.left, 10) + window.pin.PIN_WIDTH / 2) + '}, {'
-    + (parseInt(window.pin.main.style.top, 10) + window.pin.PIN_HEIGHT) + '}';
   };
 
   /**
@@ -147,5 +144,5 @@
   });
 
   makeAllFormFieldsActive(false);
-  setAddressInputValues();
+  window.form.setAddressInputValues();
 })();
