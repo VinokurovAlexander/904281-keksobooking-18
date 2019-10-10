@@ -14,28 +14,39 @@
      */
     generateCards: function (announcements) {
       var cards = [];
-      announcements.forEach(function (advert) {
-        var cardElement = cardTemplate.cloneNode(true);
-
-        cardElement.querySelector('.popup__title').textContent = advert.offer.title;
-        cardElement.querySelector('.popup__text--address').textContent = advert.offer.address;
-        cardElement.querySelector('.popup__text--price').textContent = advert.offer.price + ' ₽/ночь';
-        cardElement.querySelector('.popup__type').textContent = window.data.ApartamentTypes[advert.offer.type];
-        cardElement.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' ' + advert.offer.guests;
-        cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
-        cardElement.querySelector('.popup__description').textContent = advert.offer.description;
-        cardElement.querySelector('.popup__avatar').setAttribute('src', advert.author.avatar);
-        cardElement.classList.add('popup--closed');
-
-        var deleteFeatures = window.data.FEATURES.filter(function (feature) {
-          return !advert.offer.features.includes(feature);
-        });
-        editFeatures(cardElement, deleteFeatures);
-        addOfferPhotos(cardElement, advert.offer.photos);
-        cards.push(cardElement);
+      cards = announcements.map(function (advert) {
+        return generateCard(advert);
       });
       return cards;
     }
+  };
+
+  /**
+   * Генерирует карточку объявления.
+   *
+   * @param {object} advert - Объект оффера.
+   * @return {array} Нода карточки объявления.
+   */
+  var generateCard = function (advert) {
+    var cardElement = cardTemplate.cloneNode(true);
+
+    cardElement.querySelector('.popup__title').textContent = advert.offer.title;
+    cardElement.querySelector('.popup__text--address').textContent = advert.offer.address;
+    cardElement.querySelector('.popup__text--price').textContent = advert.offer.price + ' ₽/ночь';
+    cardElement.querySelector('.popup__type').textContent = window.data.ApartamentTypes[advert.offer.type];
+    cardElement.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' ' + advert.offer.guests;
+    cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
+    cardElement.querySelector('.popup__description').textContent = advert.offer.description;
+    cardElement.querySelector('.popup__avatar').setAttribute('src', advert.author.avatar);
+    cardElement.classList.add('popup--closed');
+
+    var deleteFeatures = window.data.FEATURES.filter(function (feature) {
+      return !advert.offer.features.includes(feature);
+    });
+    editFeatures(cardElement, deleteFeatures);
+    addOfferPhotos(cardElement, advert.offer.photos);
+
+    return cardElement;
   };
 
   /**

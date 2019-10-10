@@ -40,33 +40,43 @@
       var announcements = [];
 
       for (var i = 1; i <= numberOfAnnouncements; i++) {
-
-        var announcement = {
-          author: {
-            avatar: 'img/avatars/user0' + i + '.png'
-          },
-          offer: {
-            title: 'Объявление о продаже',
-            price: window.util.getRandomNumberFromRange(ApartamentPriceRange.MIN_PRICE, ApartamentPriceRange.MAX_PRICE),
-            type: window.util.getRandomValueFromArray(Object.keys(ApartamentTypes)),
-            rooms: window.util.getRandomValueFromArray(ROOMS),
-            guests: window.util.getRandomValueFromArray(GUESTS),
-            checkin: window.util.getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
-            checkout: window.util.getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
-            features: FEATURES.slice(window.util.getRandomNumberFromRange(0, FEATURES.length)),
-            description: 'Описание объявления',
-            photos: APARTAMENT_PHOTOS.slice(window.util.getRandomNumberFromRange(0, APARTAMENT_PHOTOS.length))
-          },
-          location: {
-            x: window.util.getRandomNumberFromRange(Locations.X_MIN, Locations.X_MAX),
-            y: window.util.getRandomNumberFromRange(Locations.Y_MIN, Locations.Y_MAX)
-          }
-        };
-        announcement.offer.address = announcement.location.x + ', ' + announcement.location.y;
-
+        var announcement = generateAnnouncement(i);
         announcements.push(announcement);
       }
       return announcements;
     }
+  };
+
+  /**
+   * Генерирует объект оффера.
+   *
+   * @param {number} index - Порядковый номер оффера.
+   * @return {object} Массив с объектот оффера.
+   */
+  var generateAnnouncement = function (index) {
+    var announcement = {
+      author: {
+        avatar: 'img/avatars/user0' + index + '.png'
+      },
+      offer: {
+        title: 'Объявление о продаже',
+        price: window.util.getRandomNumberFromRange(ApartamentPriceRange.MIN_PRICE, ApartamentPriceRange.MAX_PRICE),
+        type: window.util.getRandomValueFromArray(Object.keys(ApartamentTypes)),
+        rooms: window.util.getRandomValueFromArray(ROOMS),
+        guests: window.util.getRandomValueFromArray(GUESTS),
+        checkin: window.util.getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
+        checkout: window.util.getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
+        features: FEATURES.slice(window.util.getRandomNumberFromRange(0, FEATURES.length)),
+        description: 'Описание объявления',
+        photos: APARTAMENT_PHOTOS.slice(window.util.getRandomNumberFromRange(0, APARTAMENT_PHOTOS.length))
+      },
+      location: {
+        x: window.util.getRandomNumberFromRange(Locations.X_MIN, Locations.X_MAX),
+        y: window.util.getRandomNumberFromRange(Locations.Y_MIN, Locations.Y_MAX)
+      }
+    };
+    announcement.offer.address = announcement.location.x + ', ' + announcement.location.y;
+
+    return announcement;
   };
 })();
