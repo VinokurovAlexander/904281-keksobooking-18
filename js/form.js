@@ -1,41 +1,42 @@
 'use strict';
 
 (function () {
-  var NUMBER_OF_ANNOUNCEMENTS = 8;
-
   var MinPriceAndTypes = {
     bungalo: 0,
     flat: 1000,
     house: 5000,
     palace: 10000
   };
-  var page = {
-    active: false
-  };
+
   var form = document.querySelector('.ad-form');
 
   window.form = {
     /**
      * Переводит форму в активное состояние.
      */
-    makeFormActive: function () {
-      if (!page.active) {
-        var announcements = window.data.generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
-        var htmlPins = window.pin.generatePins(announcements);
-        var htmlCards = window.card.generateCards(announcements);
-        window.map.appendPins(htmlPins);
-        window.map.appendCards(htmlCards);
+    makeActive: function () {
+      form.classList.remove('ad-form--disabled');
 
-        window.map.section.classList.remove('map--faded');
-        form.classList.remove('ad-form--disabled');
+      makeAllFormFieldsActive(true);
+      addChangeHandlerOnApartamentType();
+      addCheckInAndCheckOutTimeChangeHandler();
 
-        makeFormFieldsActive(true);
-        addChangeHandlerOnApartamentType();
-        addCheckInAndCheckOutTimeChangeHandler();
+      this.setAddressInputValues();
+    },
 
-        page.active = true;
-        setAddressInputValues();
-      }
+    /**
+     * Устанавливает значения поля ввода адреса.
+     * При НЕактивной странице указываются координаты центра главного пина,
+     * при активной странице указываются координаты острого конца пина.
+     */
+    setAddressInputValues: function () {
+      var addressInput = form.querySelector('input[name="address"]');
+
+      addressInput.value = window.page.active ?
+        (parseInt(window.pin.main.style.left, 10) + window.pin.WIDTH / 2) + ' ' +
+        (parseInt(window.pin.main.style.top, 10) + window.pin.HEIGHT / 2) :
+        (parseInt(window.pin.main.style.left, 10) + window.pin.WIDTH / 2) + ' '
+        + (parseInt(window.pin.main.style.top, 10) + window.pin.HEIGHT);
     }
   };
 
@@ -46,15 +47,15 @@
    * @param {boolean} isFormFieldsActive - если true, поля активны для ввода,
    * иначе - false.
    */
-  var makeFormFieldsActive = function (isFormFieldsActive) {
-    var formFields = {
-      fieldsets: form.querySelectorAll('.ad-form__element'),
-      mapFilters: window.map.section.querySelectorAll('.map__filter')
+  var makeAllFormFieldsActive = function (isFormFieldsActive) {
+    var fields = {
+      form: document.querySelectorAll('.ad-form > *'),
+      mapFilters: document.querySelectorAll('.map__filters > *')
     };
 
-    for (var fields in formFields) {
-      if (formFields.hasOwnProperty(fields)) {
-        formFields[fields].forEach(function (element) {
+    for (var parent in fields) {
+      if (fields.hasOwnProperty(parent)) {
+        fields[parent].forEach(function (element) {
           if (isFormFieldsActive) {
             element.removeAttribute('disabled');
           } else {
@@ -77,21 +78,6 @@
       currentApartamentTypeValue = apartamentTypeSelect.querySelector('option:checked').value;
       priceInput.setAttribute('placeholder', MinPriceAndTypes[currentApartamentTypeValue]);
     });
-  };
-
-  /**
-   * Устанавливает значения поля ввода адреса.
-   * При НЕактивной странице указываются координаты центра главного пина,
-   * при активной странице указываются координаты острого конца пина.
-   */
-  var setAddressInputValues = function () {
-    var addressInput = form.querySelector('input[name="address"]');
-
-    addressInput.value = page.active ?
-      '{' + (parseInt(window.map.mainPin.style.left, 10) + window.pin.PIN_WIDTH / 2) + '}, {'
-    + (parseInt(window.map.mainPin.style.top, 10) + window.pin.PIN_HEIGHT / 2) + '}' :
-      '{' + (parseInt(window.map.mainPin.style.left, 10) + window.pin.PIN_WIDTH / 2) + '}, {'
-    + (parseInt(window.map.mainPin.style.top, 10) + window.pin.PIN_HEIGHT) + '}';
   };
 
   /**
@@ -157,6 +143,6 @@
     window.util.isEnterEvent(evt, validate);
   });
 
-  makeFormFieldsActive(false);
-  setAddressInputValues();
+  makeAllFormFieldsActive(false);
+  window.form.setAddressInputValues();
 })();

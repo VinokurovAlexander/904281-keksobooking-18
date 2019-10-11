@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var ApartamentTypes = {
+  var ApartamentType = {
     FLAT: 'Квартира',
     BUNGALO: 'Бунгало',
     HOUSE: 'Дом',
@@ -20,31 +20,59 @@
     'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
     'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
   ];
-  var Locations = {
-    Y_MIN: 130,
-    Y_MAX: 560,
-    X_MIN: 100,
-    X_MAX: 1100
+
+  var Location = {
+    Y_MIN: 95,
+    Y_MAX: 595,
+    X_MIN: 0,
+    X_MAX: getMaxLocationX(window.map.overlay)
   };
+
+  var NUMBER_OF_ANNOUNCEMENTS = 8;
+
   window.data = {
-    ApartamentTypes: ApartamentTypes,
+    ApartamentTypes: ApartamentType,
     FEATURES: FEATURES,
+    Location: Location,
 
     /**
-     * Генерирует массив с объектами офферов.
+     * Генерирует и добавляет на карту пины и карточки офферов.
      *
-     * @param {number} numberOfAnnouncements - Количество генерируемых офферов.
-     * @return {array} Массив с объектами офферов.
      */
-    generateAllAnnouncements: function (numberOfAnnouncements) {
-      var announcements = [];
+    generateAll: function () {
+      var announcements = generateAllAnnouncements(NUMBER_OF_ANNOUNCEMENTS);
+      var htmlPins = window.pin.generatePins(announcements);
+      var htmlCards = window.card.generateCards(announcements);
 
-      for (var i = 1; i <= numberOfAnnouncements; i++) {
-        var announcement = generateAnnouncement(i);
-        announcements.push(announcement);
-      }
-      return announcements;
+      window.map.appendPins(htmlPins);
+      window.map.appendCards(htmlCards);
     }
+  };
+
+  /**
+   * Возвращает максимальную координату размещения пина по оси Х.
+   *
+   * @param {object} element - Нода элемента в рамках которого перемещается пин.
+   * @return {number} Максимальная координата размещения пина по оси Х.
+   */
+  function getMaxLocationX(element) {
+    return element.clientWidth - window.pin.main.clientWidth;
+  }
+
+  /**
+   * Генерирует массив с объектами офферов.
+   *
+   * @param {number} numberOfAnnouncements - Количество генерируемых офферов.
+   * @return {array} Массив с объектами офферов.
+   */
+  var generateAllAnnouncements = function (numberOfAnnouncements) {
+    var announcements = [];
+
+    for (var i = 1; i <= numberOfAnnouncements; i++) {
+      var announcement = generateAnnouncement(i);
+      announcements.push(announcement);
+    }
+    return announcements;
   };
 
   /**
@@ -61,7 +89,7 @@
       offer: {
         title: 'Объявление о продаже',
         price: window.util.getRandomNumberFromRange(ApartamentPriceRange.MIN_PRICE, ApartamentPriceRange.MAX_PRICE),
-        type: window.util.getRandomValueFromArray(Object.keys(ApartamentTypes)),
+        type: window.util.getRandomValueFromArray(Object.keys(ApartamentType)),
         rooms: window.util.getRandomValueFromArray(ROOMS),
         guests: window.util.getRandomValueFromArray(GUESTS),
         checkin: window.util.getRandomValueFromArray(CHECKIN_AND_CHECKOUT_TIME),
@@ -71,8 +99,8 @@
         photos: APARTAMENT_PHOTOS.slice(window.util.getRandomNumberFromRange(0, APARTAMENT_PHOTOS.length))
       },
       location: {
-        x: window.util.getRandomNumberFromRange(Locations.X_MIN, Locations.X_MAX),
-        y: window.util.getRandomNumberFromRange(Locations.Y_MIN, Locations.Y_MAX)
+        x: window.util.getRandomNumberFromRange(Location.X_MIN, Location.X_MAX),
+        y: window.util.getRandomNumberFromRange(Location.Y_MIN, Location.Y_MAX)
       }
     };
     announcement.offer.address = announcement.location.x + ', ' + announcement.location.y;
