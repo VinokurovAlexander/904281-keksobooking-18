@@ -33,10 +33,10 @@
       var addressInput = form.querySelector('input[name="address"]');
 
       addressInput.value = window.page.active ?
-        '{' + (parseInt(window.pin.main.style.left, 10) + window.pin.PIN_WIDTH / 2) + '}, {'
-      + (parseInt(window.pin.main.style.top, 10) + window.pin.PIN_HEIGHT / 2) + '}' :
-        '{' + (parseInt(window.pin.main.style.left, 10) + window.pin.PIN_WIDTH / 2) + '}, {'
-      + (parseInt(window.pin.main.style.top, 10) + window.pin.PIN_HEIGHT) + '}';
+        (parseInt(window.pin.main.style.left, 10) + window.pin.WIDTH / 2) + ' ' +
+        (parseInt(window.pin.main.style.top, 10) + window.pin.HEIGHT / 2) :
+        (parseInt(window.pin.main.style.left, 10) + window.pin.WIDTH / 2) + ' '
+        + (parseInt(window.pin.main.style.top, 10) + window.pin.HEIGHT);
     }
   };
 

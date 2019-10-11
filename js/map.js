@@ -6,9 +6,11 @@
   var mapPinsWrapper = document.querySelector('.map__pins');
   var map = document.querySelector('.map');
   var mapFiltersContainer = document.querySelector('.map__filters-container');
+  var overlay = map.querySelector('.map__overlay');
 
   window.map = {
     section: map,
+    overlay: overlay,
 
     makeActive: function () {
       map.classList.remove('map--faded');

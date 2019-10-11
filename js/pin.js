@@ -1,8 +1,10 @@
 'use strict';
 
 (function () {
-  var PIN_WIDTH = 50;
-  var PIN_HEIGHT = 70;
+  var Pin = {
+    WIDTH: 50,
+    HEIGHT: 70
+  };
 
   var pinTemplate = document.querySelector('#pin')
       .content
@@ -10,8 +12,8 @@
   var mainPin = document.querySelector('.map__pin--main');
 
   window.pin = {
-    PIN_WIDTH: PIN_WIDTH,
-    PIN_HEIGHT: PIN_HEIGHT,
+    WIDTH: Pin.WIDTH,
+    HEIGHT: Pin.HEIGHT,
 
     main: mainPin,
 
@@ -34,8 +36,8 @@
         var offerTitle = advert.offer.title;
         pinImg.setAttribute('alt', offerTitle);
 
-        var locationX = advert.location.x + PIN_WIDTH / 2 + 'px';
-        var locationY = advert.location.y + PIN_HEIGHT + 'px';
+        var locationX = advert.location.x + Pin.WIDTH / 2 + 'px';
+        var locationY = advert.location.y + Pin.HEIGHT + 'px';
         var pinCoordinates = 'left: ' + locationX + '; ' + 'top: ' + locationY + ';';
         pinElement.setAttribute('style', pinCoordinates);
 
@@ -71,16 +73,16 @@
             y: mainPin.offsetTop - shift.y
           };
 
-          if (pinStyleCoords.x > window.data.Locations.X_MAX) {
-            pinStyleCoords.x = window.data.Locations.X_MAX;
-          } else if (pinStyleCoords.x < window.data.Locations.X_MIN) {
-            pinStyleCoords.x = window.data.Locations.X_MIN;
+          if (pinStyleCoords.x > window.data.Location.X_MAX) {
+            pinStyleCoords.x = window.data.Location.X_MAX;
+          } else if (pinStyleCoords.x < window.data.Location.X_MIN) {
+            pinStyleCoords.x = window.data.Location.X_MIN;
           }
 
-          if (pinStyleCoords.y > window.data.Locations.Y_MAX) {
-            pinStyleCoords.y = window.data.Locations.Y_MAX;
-          } else if (pinStyleCoords.y < window.data.Locations.Y_MIN) {
-            pinStyleCoords.y = window.data.Locations.Y_MIN;
+          if (pinStyleCoords.y > window.data.Location.Y_MAX) {
+            pinStyleCoords.y = window.data.Location.Y_MAX;
+          } else if (pinStyleCoords.y < window.data.Location.Y_MIN) {
+            pinStyleCoords.y = window.data.Location.Y_MIN;
           }
 
           mainPin.style.left = pinStyleCoords.x + 'px';
