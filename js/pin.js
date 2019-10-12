@@ -9,7 +9,11 @@
   var pinTemplate = document.querySelector('#pin')
       .content
       .querySelector('button');
-  var mainPin = document.querySelector('.map__pin--main');
+  var mainPin = {
+    element: document.querySelector('.map__pin--main'),
+    WIDTH: 65,
+    HEIGHT: 65
+  };
 
   window.pin = {
     WIDTH: Pin.WIDTH,
@@ -50,7 +54,7 @@
      * Добавляет обработчик для главного пина.
      */
     addMousemoveHandler: function () {
-      mainPin.addEventListener('mousedown', function (evt) {
+      mainPin.element.addEventListener('mousedown', function (evt) {
         var coords = {
           x: evt.clientX,
           y: evt.clientY
@@ -68,8 +72,8 @@
           };
 
           var pinStyleCoords = {
-            x: mainPin.offsetLeft - shift.x,
-            y: mainPin.offsetTop - shift.y
+            x: mainPin.element.offsetLeft - shift.x,
+            y: mainPin.element.offsetTop - shift.y
           };
 
           if (pinStyleCoords.x > window.map.Location.X_MAX) {
@@ -84,8 +88,8 @@
             pinStyleCoords.y = window.map.Location.Y_MIN;
           }
 
-          mainPin.style.left = pinStyleCoords.x + 'px';
-          mainPin.style.top = pinStyleCoords.y + 'px';
+          mainPin.element.style.left = pinStyleCoords.x + 'px';
+          mainPin.element.style.top = pinStyleCoords.y + 'px';
 
           window.form.setAddressInputValues();
         };
@@ -102,17 +106,16 @@
     }
   };
 
-  mainPin.addEventListener('click', function (evt) {
+  mainPin.element.addEventListener('click', function (evt) {
     if (evt.which === 1) {
       window.backend.load(
           window.backend.URL.LOAD,
-          window.data.appendPinsAndCards,
-          window.backend.errorHandler,
-          window.page.makeActive
+          window.page.makeActive,
+          window.error.handler
       );
     }
   });
-  mainPin.addEventListener('keydown', function (evt) {
+  mainPin.element.addEventListener('keydown', function (evt) {
     window.util.isEnterEvent(evt, window.form.makeActive);
   });
 })();

@@ -110,7 +110,7 @@
    * @return {number} Максимальная координата размещения пина по оси Х.
    */
   function getMaxLocationX(element) {
-    return element.clientWidth - window.pin.main.clientWidth;
+    return element.clientWidth - window.pin.main.WIDTH;
   }
 
   map.addEventListener('keydown', function (evt) {
