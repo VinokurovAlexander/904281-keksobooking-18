@@ -2,16 +2,24 @@
 
 (function () {
   var NUMBER_REGEX = /\d+/;
+  var Location = {
+    Y_MIN: 60,
+    Y_MAX: 560,
+    X_MIN: 0,
+    X_MAX: getMaxLocationX(document.querySelector('.map__overlay'))
+  };
 
   var mapPinsWrapper = document.querySelector('.map__pins');
   var map = document.querySelector('.map');
   var mapFiltersContainer = document.querySelector('.map__filters-container');
-  var overlay = map.querySelector('.map__overlay');
 
   window.map = {
+    Location: Location,
     section: map,
-    overlay: overlay,
 
+    /**
+     * Делает карту активной.
+     */
     makeActive: function () {
       map.classList.remove('map--faded');
     },
@@ -84,13 +92,26 @@
   /**
    * Функция возвращает порядковый номер из адреса
    * пути к аватару (img/avatars/user04.png).
+   * В случае последнего пина, у которого адрес img/avatars/default.png,
+   * берется соответствующий последний порядковый номер в массиве офферов.
    *
    * @param {string} str - Строка из которой нужно получить число.
    * @return {number} - Порядковый номер.
    */
   var getPinIndex = function (str) {
-    return str.match(NUMBER_REGEX)[0].slice(1);
+    var result = str.match(NUMBER_REGEX);
+    return result === null ? window.data.itemsNumber : result[0].slice(1);
   };
+
+  /**
+   * Возвращает максимальную координату размещения пина по оси Х.
+   *
+   * @param {object} element - Нода элемента в рамках которого перемещается пин.
+   * @return {number} Максимальная координата размещения пина по оси Х.
+   */
+  function getMaxLocationX(element) {
+    return element.clientWidth - window.pin.main.clientWidth;
+  }
 
   map.addEventListener('keydown', function (evt) {
     window.util.isEscEvent(evt, closeAd);

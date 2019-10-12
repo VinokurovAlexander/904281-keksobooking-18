@@ -1,20 +1,18 @@
 'use strict';
 
 (function () {
-  window.page = {
-    active: false,
+  var pageActive = false;
 
+  window.page = {
     /**
      * Делает страницу активной.
-     *
      */
     makeActive: function () {
-      if (!this.active) {
-        this.active = true;
+      if (!pageActive) {
+        pageActive = true;
 
         window.map.makeActive();
         window.form.makeActive();
-        window.data.generateAll();
         window.pin.addMousemoveHandler();
       }
     }

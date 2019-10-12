@@ -48,7 +48,6 @@
 
     /**
      * Добавляет обработчик для главного пина.
-     *
      */
     addMousemoveHandler: function () {
       mainPin.addEventListener('mousedown', function (evt) {
@@ -73,16 +72,16 @@
             y: mainPin.offsetTop - shift.y
           };
 
-          if (pinStyleCoords.x > window.data.Location.X_MAX) {
-            pinStyleCoords.x = window.data.Location.X_MAX;
-          } else if (pinStyleCoords.x < window.data.Location.X_MIN) {
-            pinStyleCoords.x = window.data.Location.X_MIN;
+          if (pinStyleCoords.x > window.map.Location.X_MAX) {
+            pinStyleCoords.x = window.map.Location.X_MAX;
+          } else if (pinStyleCoords.x < window.map.Location.X_MIN) {
+            pinStyleCoords.x = window.map.Location.X_MIN;
           }
 
-          if (pinStyleCoords.y > window.data.Location.Y_MAX) {
-            pinStyleCoords.y = window.data.Location.Y_MAX;
-          } else if (pinStyleCoords.y < window.data.Location.Y_MIN) {
-            pinStyleCoords.y = window.data.Location.Y_MIN;
+          if (pinStyleCoords.y > window.map.Location.Y_MAX) {
+            pinStyleCoords.y = window.map.Location.Y_MAX;
+          } else if (pinStyleCoords.y < window.map.Location.Y_MIN) {
+            pinStyleCoords.y = window.map.Location.Y_MIN;
           }
 
           mainPin.style.left = pinStyleCoords.x + 'px';
@@ -105,7 +104,12 @@
 
   mainPin.addEventListener('click', function (evt) {
     if (evt.which === 1) {
-      window.page.makeActive();
+      window.backend.load(
+          window.backend.URL.LOAD,
+          window.data.appendPinsAndCards,
+          window.backend.errorHandler,
+          window.page.makeActive
+      );
     }
   });
   mainPin.addEventListener('keydown', function (evt) {
