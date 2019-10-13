@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var FEATURES = getFeatures();
+
   var cardTemplate = document.querySelector('#card')
       .content
       .querySelector('article');
@@ -18,6 +20,17 @@
       });
     }
   };
+
+  /**
+   * Получает массив с удобствами в апартаментах.
+   *
+   * @return {array} Массив c удобствами.
+   */
+  function getFeatures() {
+    return Array.from(document.querySelectorAll('.map__feature')).map(function (item) {
+      return item.className.slice(item.className.indexOf('--') + 2);
+    });
+  }
 
   /**
    * Генерирует карточку объявления.
@@ -38,7 +51,7 @@
     cardElement.querySelector('.popup__avatar').setAttribute('src', advert.author.avatar);
     cardElement.classList.add('popup--closed');
 
-    var deleteFeatures = window.data.FEATURES.filter(function (feature) {
+    var deleteFeatures = FEATURES.filter(function (feature) {
       return !advert.offer.features.includes(feature);
     });
     editFeatures(cardElement, deleteFeatures);
