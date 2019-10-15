@@ -10,9 +10,34 @@
       .content
       .querySelector('button');
   var mainPin = {
-    element: document.querySelector('.map__pin--main'),
     WIDTH: 65,
-    HEIGHT: 65
+    HEIGHT: 65,
+
+    element: document.querySelector('.map__pin--main'),
+    /**
+     * Возвращает пин к исходному положению.
+     */
+    backToStart: function () {
+      this.element.style.left = mainPin.startCoords.x;
+      this.element.style.top = mainPin.startCoords.y;
+    },
+    /**
+     * Добавляет и удалет обработчик для главного пина.
+     *
+     * @param {boolean} add - Флаг.
+     */
+    addMousemoveHandler: function (add) {
+      if (add) {
+        mainPin.element.addEventListener('mousedown', mouseMoverHandler);
+      } else {
+        mainPin.element.removeEventListener('mousedown', mouseMoverHandler);
+      }
+    }
+  };
+
+  mainPin.startCoords = {
+    x: getComputedStyle(mainPin.element).left,
+    y: getComputedStyle(mainPin.element).top
   };
 
   window.pin = {
@@ -48,62 +73,62 @@
         pins.push(pinElement);
       });
       return pins;
-    },
-
-    /**
-     * Добавляет обработчик для главного пина.
-     */
-    addMousemoveHandler: function () {
-      mainPin.element.addEventListener('mousedown', function (evt) {
-        var coords = {
-          x: evt.clientX,
-          y: evt.clientY
-        };
-
-        var onMouseMove = function (moveEvt) {
-          var shift = {
-            x: coords.x - moveEvt.clientX,
-            y: coords.y - moveEvt.clientY,
-          };
-
-          coords = {
-            x: moveEvt.clientX,
-            y: moveEvt.clientY
-          };
-
-          var pinStyleCoords = {
-            x: mainPin.element.offsetLeft - shift.x,
-            y: mainPin.element.offsetTop - shift.y
-          };
-
-          if (pinStyleCoords.x > window.map.Location.X_MAX) {
-            pinStyleCoords.x = window.map.Location.X_MAX;
-          } else if (pinStyleCoords.x < window.map.Location.X_MIN) {
-            pinStyleCoords.x = window.map.Location.X_MIN;
-          }
-
-          if (pinStyleCoords.y > window.map.Location.Y_MAX) {
-            pinStyleCoords.y = window.map.Location.Y_MAX;
-          } else if (pinStyleCoords.y < window.map.Location.Y_MIN) {
-            pinStyleCoords.y = window.map.Location.Y_MIN;
-          }
-
-          mainPin.element.style.left = pinStyleCoords.x + 'px';
-          mainPin.element.style.top = pinStyleCoords.y + 'px';
-
-          window.form.setAddressInputValues();
-        };
-
-        var onMouseUp = function () {
-          document.removeEventListener('mousemove', onMouseMove);
-          document.removeEventListener('mouseup', onMouseUp);
-          window.form.setAddressInputValues();
-        };
-
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-      });
     }
+  };
+
+  /**
+   * Обработчик для перемещения пина.
+   *
+   * @param {object} evt - Объект события.
+   */
+  var mouseMoverHandler = function (evt) {
+    var coords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    var onMouseMove = function (moveEvt) {
+      var shift = {
+        x: coords.x - moveEvt.clientX,
+        y: coords.y - moveEvt.clientY,
+      };
+
+      coords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      var pinStyleCoords = {
+        x: mainPin.element.offsetLeft - shift.x,
+        y: mainPin.element.offsetTop - shift.y
+      };
+
+      if (pinStyleCoords.x > window.map.Location.X.MAX) {
+        pinStyleCoords.x = window.map.Location.X.MAX;
+      } else if (pinStyleCoords.x < window.map.Location.X.MIN) {
+        pinStyleCoords.x = window.map.Location.X.MIN;
+      }
+
+      if (pinStyleCoords.y > window.map.Location.Y.MAX) {
+        pinStyleCoords.y = window.map.Location.Y.MAX;
+      } else if (pinStyleCoords.y < window.map.Location.Y.MIN) {
+        pinStyleCoords.y = window.map.Location.Y.MIN;
+      }
+
+      mainPin.element.style.left = pinStyleCoords.x + 'px';
+      mainPin.element.style.top = pinStyleCoords.y + 'px';
+
+      window.form.setAddressInputValues();
+    };
+
+    var onMouseUp = function () {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+      window.form.setAddressInputValues();
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   };
 
   mainPin.element.addEventListener('click', function (evt) {
@@ -114,8 +139,5 @@
           window.error.handler
       );
     }
-  });
-  mainPin.element.addEventListener('keydown', function (evt) {
-    window.util.isEnterEvent(evt, window.form.makeActive);
   });
 })();

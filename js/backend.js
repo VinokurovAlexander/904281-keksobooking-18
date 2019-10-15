@@ -4,7 +4,8 @@
   var OK_STATUS_CODE = 200;
   var REQUEST_TIMEOUT = 10000;
   var URL = {
-    LOAD: 'https://js.dump.academy/keksobooking/data'
+    LOAD: 'https://js.dump.academy/keksobooking/data',
+    SAVE: 'https://js.dump.academy/keksobooking'
   };
 
   window.backend = {
@@ -22,6 +23,20 @@
       xhr.open('GET', url);
       xhr.send();
     },
+
+    /**
+     * Отправляет данные на сервер.
+     *
+     * @param {string} url - Адрес сервера.
+     * @param {function} onLoad - Функция для обработки полученных данных.
+     * @param {function} onError - Функция для обработки ошибок при обращении к серверу.
+     * @param {object} data - Объект с данными, которые нужно отправить.
+     */
+    save: function (url, onLoad, onError, data) {
+      var xhr = initXHR(onLoad, onError);
+      xhr.open('POST', url);
+      xhr.send(data);
+    }
   };
 
   /**

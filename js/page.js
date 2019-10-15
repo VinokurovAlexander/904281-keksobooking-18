@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  // var pageActive = false;
 
   window.page = {
     active: false,
@@ -14,11 +13,31 @@
     makeActive: function (data) {
       if (!window.page.active) {
         window.data.appendPinsAndCards(data);
-        window.page.active = true;
-        window.map.makeActive();
-        window.form.makeActive();
-        window.pin.addMousemoveHandler();
+        activate(true);
+      }
+    },
+
+    /**
+     * Делает страницу неактивной.
+     */
+    makeInactive: function () {
+      if (window.page.active) {
+        window.data.removePinsAndCards();
+        activate(false);
+        window.pin.main.backToStart();
       }
     }
+  };
+
+  /**
+   * Вспомогательная функция для активации страницы.
+   *
+   * @param {boolean} makeActive - Флаг.
+   */
+  var activate = function (makeActive) {
+    window.page.active = makeActive;
+    window.map.makeActive(makeActive);
+    window.form.makeActive(makeActive);
+    window.pin.main.addMousemoveHandler(makeActive);
   };
 })();
