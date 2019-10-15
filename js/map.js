@@ -3,10 +3,15 @@
 (function () {
   var NUMBER_REGEX = /\d+/;
   var Location = {
-    Y_MIN: 60,
-    Y_MAX: 560,
-    X_MIN: 0,
-    X_MAX: getMaxLocationX(document.querySelector('.map__overlay'))
+    X: {
+      MIN: 0,
+      MAX: getMaxLocationX(document.querySelector('.map__overlay'))
+    },
+
+    Y: {
+      MIN: 60,
+      MAX: 560
+    }
   };
 
   var mapPinsWrapper = document.querySelector('.map__pins');
@@ -18,10 +23,16 @@
     section: map,
 
     /**
-     * Делает карту активной.
+     * Меняет активность карты.
+     *
+     * @param {boolean} makeActive - Флаг.
      */
-    makeActive: function () {
-      map.classList.remove('map--faded');
+    makeActive: function (makeActive) {
+      if (makeActive) {
+        map.classList.remove('map--faded');
+      } else {
+        map.classList.add('map--faded');
+      }
     },
 
     /**

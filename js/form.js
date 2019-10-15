@@ -12,15 +12,20 @@
 
   window.form = {
     /**
-     * Переводит форму в активное состояние.
+     * Меняет активность формы.
+     *
+     * @param {object} makeActive - Флаг.
      */
-    makeActive: function () {
-      form.classList.remove('ad-form--disabled');
-
-      makeAllFormFieldsActive(true);
-      addChangeHandlerOnApartamentType();
-      addCheckInAndCheckOutTimeChangeHandler();
-
+    makeActive: function (makeActive) {
+      if (makeActive) {
+        form.classList.remove('ad-form--disabled');
+      } else {
+        form.classList.add('ad-form--disabled');
+        form.reset();
+      }
+      addChangeHandlerOnApartamentType(makeActive);
+      makeAllFormFieldsActive(makeActive);
+      addCheckInAndCheckOutTimeChangeHandler(makeActive);
       this.setAddressInputValues();
     },
 
@@ -33,9 +38,9 @@
       var addressInput = form.querySelector('input[name="address"]');
 
       addressInput.value = window.page.active ?
-        (parseInt(window.pin.main.element.style.left, 10) + Math.round(window.pin.main.WIDTH / 2)) + ' ' +
+        (parseInt(window.pin.main.element.style.left, 10) + Math.round(window.pin.main.WIDTH / 2)) + ', ' +
         (parseInt(window.pin.main.element.style.top, 10) + Math.round(window.pin.main.HEIGHT / 2)) :
-        (parseInt(window.pin.main.element.style.left, 10) + Math.round(window.pin.main.WIDTH / 2)) + ' '
+        (parseInt(window.pin.main.element.style.left, 10) + Math.round(window.pin.main.WIDTH / 2)) + ', '
         + (parseInt(window.pin.main.element.style.top, 10) + Math.round(window.pin.main.HEIGHT));
     }
   };
@@ -69,15 +74,28 @@
   var apartamentTypeSelect = form.querySelector('select[name="type"]');
   var currentApartamentTypeValue = apartamentTypeSelect.querySelector('option:checked').value;
   var priceInput = form.querySelector('#price');
+
+  /**
+   * Функция для для отображения
+   * соответствующего placeholder у поля "Цена за ночь".
+   */
+  var apartamentTypeHandler = function () {
+    currentApartamentTypeValue = apartamentTypeSelect.querySelector('option:checked').value;
+    priceInput.setAttribute('placeholder', MinPriceAndTypes[currentApartamentTypeValue]);
+  };
+
   /**
    * Добавление обрабочика на поле "Тип жилья" для отображения
    * соответствующего placeholder у поля "Цена за ночь".
+   *
+   * @param {boolean} add - Флаг.
    */
-  var addChangeHandlerOnApartamentType = function () {
-    apartamentTypeSelect.addEventListener('change', function () {
-      currentApartamentTypeValue = apartamentTypeSelect.querySelector('option:checked').value;
-      priceInput.setAttribute('placeholder', MinPriceAndTypes[currentApartamentTypeValue]);
-    });
+  var addChangeHandlerOnApartamentType = function (add) {
+    if (add) {
+      apartamentTypeSelect.addEventListener('change', apartamentTypeHandler);
+    } else {
+      apartamentTypeSelect.removeEventListener('change', apartamentTypeHandler);
+    }
   };
 
   /**
@@ -101,19 +119,33 @@
   };
 
   /**
-   * Синхронизация между полями "Время заезда и выезда".
+   * Функция для синхронизации между
+   * полями "Время заезда и выезда".
    */
-  var addCheckInAndCheckOutTimeChangeHandler = function () {
-    var timein = form.querySelector('#timein');
-    var timeout = form.querySelector('#timeout');
+  var timein = form.querySelector('#timein');
+  var timeout = form.querySelector('#timeout');
 
-    timein.addEventListener('change', function () {
-      timeout.value = timein.value;
-    });
+  var timeinHandler = function () {
+    timeout.value = timein.value;
+  };
+  var timeoutHanlder = function () {
+    timein.value = timeout.value;
+  };
 
-    timeout.addEventListener('change', function () {
-      timein.value = timeout.value;
-    });
+  /**
+   * Добавляет или удаляет обработчик для
+   * синхронизации между полями "Время заезда и выезда".
+   *
+   * @param {boolean} add - Флаг.
+   */
+  var addCheckInAndCheckOutTimeChangeHandler = function (add) {
+    if (add) {
+      timein.addEventListener('change', timeinHandler);
+      timeout.addEventListener('change', timeoutHanlder);
+    } else {
+      timein.removeEventListener('change', timeinHandler);
+      timeout.removeEventListener('change', timeoutHanlder);
+    }
   };
 
   /**
@@ -135,12 +167,33 @@
     validatePriceAndApartamentType();
   };
 
+  var successSaveFormData = function () {
+    window.page.makeInactive();
+    window.success.show();
+  };
+
   var submitFormBtn = form.querySelector('.ad-form__submit');
   submitFormBtn.addEventListener('click', function () {
     validate();
   });
+
   submitFormBtn.addEventListener('keydown', function (evt) {
     window.util.isEnterEvent(evt, validate);
+  });
+
+  document.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.save(
+        window.backend.URL.SAVE,
+        successSaveFormData,
+        window.error.handler,
+        new FormData(form)
+    );
+  });
+
+  var resetBtn = form.querySelector('.ad-form__reset');
+  resetBtn.addEventListener('click', function () {
+    window.page.makeInactive();
   });
 
   makeAllFormFieldsActive(false);
