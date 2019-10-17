@@ -1,32 +1,33 @@
 'use strict';
 
 (function () {
+  var ITEMS_ON_MAP_NUMBER = 5;
+
   var ApartamentType = {
     FLAT: 'Квартира',
     BUNGALO: 'Бунгало',
     HOUSE: 'Дом',
     PALACE: 'Дворец'
   };
-
   window.data = {
     ApartamentTypes: ApartamentType,
 
     /**
      * Генерирует и добавляет на карту пины и карточки офферов.
      *
-     * @param {objects} announcements - Объект с офферами.
+     * @param {object} announcements - Объект с офферами.
      */
     appendPinsAndCards: function (announcements) {
-      var htmlPins = window.pin.generatePins(announcements);
-      var htmlCards = window.card.generateCards(announcements);
+      window.data.allItemsNumber = announcements.length;
+      var sliceAnnouncements = announcements.slice(0, ITEMS_ON_MAP_NUMBER);
+      var htmlPins = window.pin.generatePins(sliceAnnouncements);
+      var htmlCards = window.card.generateCards(sliceAnnouncements);
       window.map.appendPins(htmlPins);
       window.map.appendCards(htmlCards);
-      window.data.itemsNumber = announcements.length;
     },
 
     /**
      * Удаляет пины и карточки из разметки.
-     *
      */
     removePinsAndCards: function () {
       var objectElements = {
@@ -43,6 +44,15 @@
           });
         }
       }
+    },
+
+    /**
+     * Сохраняет все офферы.
+     *
+     * @param {object} announcements - Объект с офферами.
+     */
+    safeAnnouncements: function (announcements) {
+      window.data.allAnnouncements = announcements;
     }
   };
 })();
