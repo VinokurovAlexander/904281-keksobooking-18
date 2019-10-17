@@ -18,7 +18,7 @@
      */
     appendPinsAndCards: function (announcements) {
       window.data.allItemsNumber = announcements.length;
-      var sliceAnnouncements = announcements.slice(0, window.filter.ITEMS_ON_MAP_NUMBER);
+      var sliceAnnouncements = announcements.slice(0, window.mapFilter.ITEMS_ON_MAP_NUMBER);
       var htmlPins = window.pin.generatePins(sliceAnnouncements);
       var htmlCards = window.card.generateCards(sliceAnnouncements);
       window.map.appendPins(htmlPins);

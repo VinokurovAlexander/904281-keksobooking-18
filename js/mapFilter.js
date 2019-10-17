@@ -3,7 +3,7 @@
 (function () {
   var ITEMS_ON_MAP_NUMBER = 5;
 
-  window.filter = {
+  window.mapFilter = {
     ITEMS_ON_MAP_NUMBER: ITEMS_ON_MAP_NUMBER
   };
 
@@ -14,7 +14,6 @@
    * @param {object} evt - Объект события.
    */
   var mapFiltersHandler = function (evt) {
-
     var currentFilter = evt.target.getAttribute('name').split('-')[1];
     window.data.removePinsAndCards();
     window.data.appendPinsAndCards(window.data.allAnnouncements.filter(function (announcement) {
