@@ -1,12 +1,6 @@
 'use strict';
 
 (function () {
-  var ITEMS_ON_MAP_NUMBER = 5;
-
-  window.mapFilter = {
-    ITEMS_ON_MAP_NUMBER: ITEMS_ON_MAP_NUMBER
-  };
-
   /**
    * Слушает изменения фильторов карты и
    * отображает соответствующие пины.
