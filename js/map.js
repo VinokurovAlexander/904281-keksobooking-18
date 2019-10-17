@@ -111,7 +111,7 @@
    */
   var getPinIndex = function (str) {
     var result = str.match(NUMBER_REGEX);
-    return result === null ? window.data.itemsNumber : result[0].slice(1);
+    return result === null ? window.data.allItemsNumber : result[0].slice(1);
   };
 
   /**

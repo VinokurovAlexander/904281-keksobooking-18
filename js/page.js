@@ -12,6 +12,7 @@
      */
     makeActive: function (data) {
       if (!window.page.active) {
+        window.data.safeAnnouncements(data);
         window.data.appendPinsAndCards(data);
         activate(true);
       }
