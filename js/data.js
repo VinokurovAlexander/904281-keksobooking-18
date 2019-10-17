@@ -27,7 +27,6 @@
 
     /**
      * Удаляет пины и карточки из разметки.
-     *
      */
     removePinsAndCards: function () {
       var objectElements = {
@@ -46,6 +45,11 @@
       }
     },
 
+    /**
+     * Сохраняет все офферы.
+     *
+     * @param {object} announcements - Объект с офферами.
+     */
     safeAnnouncements: function (announcements) {
       window.data.allAnnouncements = announcements;
     }
