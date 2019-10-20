@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var NUMBER_REGEX = /\d+/;
   var Location = {
     X: {
       MIN: 0,
