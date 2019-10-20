@@ -60,10 +60,7 @@
      * в метод filter для применения фильтров.
      */
     featuresFilter: function (filterName, announcement, isChecked) {
-      if (isChecked) {
-        return announcement.offer.features.includes(filterName);
-      }
-      return true;
+      return isChecked ? announcement.offer.features.includes(filterName) : true;
     }
   };
 
@@ -95,7 +92,6 @@
 
   /**
    * Слушает изменения фильтров карты и отображает соответствующие пины.
-   *
    */
   var mapFiltersHandler = window.debounce(function () {
     var currentAnnouncements = window.data.allAnnouncements;
