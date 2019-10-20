@@ -67,11 +67,13 @@
   /**
    * Открывает карточку с объявлением.
    *
-   * @param {number} itemNumber - порядковый номер карточки.
+   * @param {object} evt - Объект события.
    */
-  var openAd = function (itemNumber) {
+  var openAd = function (evt) {
     var adverts = map.querySelectorAll('.popup');
-    adverts[itemNumber - 1].classList.remove('popup--closed');
+    var pinsImg = Array.from(map.querySelectorAll('.map__pin img')).splice(1);
+    var pinIndex = pinsImg.indexOf(evt.target);
+    adverts[pinIndex].classList.remove('popup--closed');
     addCloseAdvertsClickHandler();
   };
 
@@ -101,20 +103,6 @@
   };
 
   /**
-   * Функция возвращает порядковый номер из адреса
-   * пути к аватару (img/avatars/user04.png).
-   * В случае последнего пина, у которого адрес img/avatars/default.png,
-   * берется соответствующий последний порядковый номер в массиве офферов.
-   *
-   * @param {string} str - Строка из которой нужно получить число.
-   * @return {number} - Порядковый номер.
-   */
-  var getPinIndex = function (str) {
-    var result = str.match(NUMBER_REGEX);
-    return result === null ? window.data.allItemsNumber : result[0].slice(1);
-  };
-
-  /**
    * Возвращает максимальную координату размещения пина по оси Х.
    *
    * @param {object} element - Нода элемента в рамках которого перемещается пин.
@@ -131,7 +119,7 @@
   map.addEventListener('click', function (evt) {
     if (evt.target.className === 'map__pin-image') {
       closeAd();
-      openAd(getPinIndex(evt.target.getAttribute('src')));
+      openAd(evt);
     }
   });
 })();
