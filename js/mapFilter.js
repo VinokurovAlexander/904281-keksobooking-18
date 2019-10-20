@@ -24,16 +24,16 @@
     mapFilter: function (filterName, announcement) {
       if (filterName === 'price') {
         var priceRange = {
-          low: function (announcement) {
+          low: function () {
             return announcement.offer.price < Price.LOW;
           },
 
-          middle: function (announcement) {
+          middle: function () {
             return announcement.offer.price >= Price.LOW && announcement.offer.price <= Price.HIGH;
           },
 
-          high: function (announcement) {
-            return announcement.offer.price > Price.HIGH
+          high: function () {
+            return announcement.offer.price > Price.HIGH;
           }
         };
 
@@ -71,24 +71,31 @@
   var mapFilters = mapFiltersForm.querySelectorAll('select');
   var featuresNodeList = mapFiltersForm.querySelectorAll('input');
 
-  function getFilters () {
-    var filters =  Array.from(mapFilters).map(function (filter) {
+  /**
+   * Возвращает массив, состоящий из объектов вида 'название фильтра': 'значение фильтра'
+   *
+   * @return {array} Массив, состоящий из объектов вида 'название фильтра': 'значение фильтра'
+   */
+  function getFilters() {
+    var filters = Array.from(mapFilters).map(function (filter) {
+      var filterObj = {};
       var filterType = filter.getAttribute('name').split('-')[1];
-      return {[filterType]: filter.value};
+      filterObj[filterType] = filter.value;
+      return filterObj;
     });
 
-    var inputs = Array.from(featuresNodeList).map(function (input) {
-      return {[input.value]: input.checked };
+    var inputs = Array.from(featuresNodeList).map(function (inputFeature) {
+      var featuresObj = {};
+      featuresObj[inputFeature.value] = inputFeature.checked;
+      return featuresObj;
     });
 
     return (filters.concat(inputs));
-  };
+  }
 
   /**
-   * Слушает изменения фильтров карты и
-   * отображает соответствующие пины.
+   * Слушает изменения фильтров карты и отображает соответствующие пины.
    *
-   * @param {object} evt - Объект события.
    */
   var mapFiltersHandler = window.debounce(function () {
     var currentAnnouncements = window.data.allAnnouncements;
@@ -104,7 +111,7 @@
         return apply.mapFilter(filterName, announcement);
       });
 
-    })
+    });
     window.data.removePinsAndCards();
     window.data.appendPinsAndCards(currentAnnouncements);
   });
