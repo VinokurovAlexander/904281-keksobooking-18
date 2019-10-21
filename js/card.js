@@ -8,6 +8,7 @@
       .querySelector('article');
 
   window.card = {
+    FEATURES: FEATURES,
     /**
      * Генерирует массив с нодами карточек офферов.
      *
@@ -18,7 +19,7 @@
       return announcements.map(function (advert) {
         return generateCard(advert);
       });
-    }
+    },
   };
 
   /**
@@ -27,8 +28,8 @@
    * @return {array} Массив c удобствами.
    */
   function getFeatures() {
-    return Array.from(document.querySelectorAll('.map__feature')).map(function (item) {
-      return item.className.slice(item.className.indexOf('--') + 2);
+    return Array.from(document.querySelectorAll('.map__checkbox')).map(function (item) {
+      return item.value;
     });
   }
 
@@ -45,7 +46,7 @@
     cardElement.querySelector('.popup__text--address').textContent = advert.offer.address;
     cardElement.querySelector('.popup__text--price').textContent = advert.offer.price + ' ₽/ночь';
     cardElement.querySelector('.popup__type').textContent = window.data.ApartamentTypes[advert.offer.type];
-    cardElement.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' ' + advert.offer.guests;
+    cardElement.querySelector('.popup__text--capacity').textContent = advert.offer.rooms + ' комнаты для ' + advert.offer.guests + ' гостей';
     cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
     cardElement.querySelector('.popup__description').textContent = advert.offer.description;
     cardElement.querySelector('.popup__avatar').setAttribute('src', advert.author.avatar);
