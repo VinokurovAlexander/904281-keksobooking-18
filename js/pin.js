@@ -26,12 +26,8 @@
      *
      * @param {boolean} add - Флаг.
      */
-    addMousemoveHandler: function (add) {
-      if (add) {
-        mainPin.element.addEventListener('mousedown', mouseMoverHandler);
-      } else {
-        mainPin.element.removeEventListener('mousedown', mouseMoverHandler);
-      }
+    addMousemoveHandler: function () {
+      mainPin.element.addEventListener('mousedown', mouseMoverHandler);
     }
   };
 
@@ -82,6 +78,11 @@
    * @param {object} evt - Объект события.
    */
   var mouseMoverHandler = function (evt) {
+    window.backend.load(
+        window.backend.URL.LOAD,
+        window.page.makeActive,
+        window.error.handler
+    );
     var coords = {
       x: evt.clientX,
       y: evt.clientY
@@ -131,13 +132,5 @@
     document.addEventListener('mouseup', onMouseUp);
   };
 
-  mainPin.element.addEventListener('click', function (evt) {
-    if (evt.which === 1) {
-      window.backend.load(
-          window.backend.URL.LOAD,
-          window.page.makeActive,
-          window.error.handler
-      );
-    }
-  });
+  mainPin.addMousemoveHandler();
 })();
