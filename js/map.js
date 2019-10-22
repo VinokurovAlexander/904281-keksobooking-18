@@ -3,7 +3,7 @@
 (function () {
   var Location = {
     X: {
-      MIN: 0,
+      MIN: -(Math.round(window.pin.main.WIDTH / 2)),
       MAX: getMaxLocationX(document.querySelector('.map__overlay'))
     },
 
@@ -108,7 +108,7 @@
    * @return {number} Максимальная координата размещения пина по оси Х.
    */
   function getMaxLocationX(element) {
-    return element.clientWidth - window.pin.main.WIDTH;
+    return element.clientWidth - (window.pin.main.WIDTH / 2);
   }
 
   map.addEventListener('keydown', function (evt) {
