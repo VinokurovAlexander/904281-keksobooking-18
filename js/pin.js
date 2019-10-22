@@ -27,7 +27,7 @@
      * @param {boolean} add - Флаг.
      */
     addMousemoveHandler: function () {
-      mainPin.element.addEventListener('mousedown', mouseMoverHandler);
+      mainPin.element.addEventListener('mousedown', mouseMoveHandler);
     }
   };
 
@@ -77,7 +77,7 @@
    *
    * @param {object} evt - Объект события.
    */
-  var mouseMoverHandler = function (evt) {
+  var mouseMoveHandler = function (evt) {
     window.backend.load(
         window.backend.URL.LOAD,
         window.page.makeActive,

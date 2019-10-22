@@ -9,6 +9,7 @@
   };
 
   var form = document.querySelector('.ad-form');
+  var filters = document.querySelector('.map__filters');
 
   window.form = {
     /**
@@ -22,6 +23,8 @@
       } else {
         form.classList.add('ad-form--disabled');
         form.reset();
+        filters.reset();
+        window.preview.removeAll();
       }
       addChangeHandlerOnApartamentType(makeActive);
       makeAllFormFieldsActive(makeActive);

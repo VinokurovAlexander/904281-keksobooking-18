@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var DEFAULT_AVATAR_PREVIEW_IMG = 'img/muffin-grey.svg';
+
   function isImage(fileName) {
     var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
@@ -8,6 +10,22 @@
       return fileName.endsWith(it);
     });
   }
+
+  window.preview = {
+    /**
+     * Функция удаляет preview изображения из формы.
+     */
+    removeAll: function () {
+      avatarPreview.src = DEFAULT_AVATAR_PREVIEW_IMG;
+      var offersPhotos = document.querySelectorAll('.ad-form__photo');
+      offersPhotos[0].querySelector('img').remove();
+      offersPhotos.forEach(function (photo, index) {
+        if (index !== 0) {
+          photo.remove();
+        }
+      });
+    }
+  };
 
   var Preview = function (fileChooser, preview) {
     this.fileChooser = fileChooser;
