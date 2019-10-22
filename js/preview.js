@@ -18,12 +18,19 @@
     removeAll: function () {
       avatarPreview.src = DEFAULT_AVATAR_PREVIEW_IMG;
       var offersPhotos = document.querySelectorAll('.ad-form__photo');
-      offersPhotos[0].querySelector('img').remove();
-      offersPhotos.forEach(function (photo, index) {
-        if (index !== 0) {
-          photo.remove();
-        }
-      });
+      var firstOfferPhoto = offersPhotos[0].querySelector('img');
+
+      if (firstOfferPhoto) {
+        firstOfferPhoto.remove();
+      }
+
+      if (offersPhotos.length > 1) {
+        offersPhotos.forEach(function (photo, index) {
+          if (index !== 0) {
+            photo.remove();
+          }
+        });
+      }
     }
   };
 
