@@ -69,11 +69,20 @@
    * @param {object} evt - Объект события.
    */
   var openAd = function (evt) {
-    var adverts = map.querySelectorAll('.popup');
-    var pinsImg = Array.from(map.querySelectorAll('.map__pin img')).splice(1);
-    var pinIndex = pinsImg.indexOf(evt.target);
-    adverts[pinIndex].classList.remove('popup--closed');
-    addCloseAdvertsClickHandler();
+    var className = '';
+    if (evt.target.className === 'map__pin-image') {
+      className = '.map__pin img';
+    } else if (evt.target.className === 'map__pin') {
+      className = '.map__pin';
+    }
+
+    if (className !== '') {
+      var cards = map.querySelectorAll('.popup');
+      var targetsArray = Array.from(map.querySelectorAll(className)).splice(1);
+      var pinIndex = targetsArray.indexOf(evt.target);
+      cards[pinIndex].classList.remove('popup--closed');
+      addCloseAdvertsClickHandler();
+    }
   };
 
   /**
@@ -111,14 +120,27 @@
     return element.clientWidth - (window.pin.main.WIDTH / 2);
   }
 
+  /**
+   * Функция закрывает открытую карточку объявления
+   * и открывает новую.
+   *
+   * @param {object} evt - Объект события.
+   */
+  var openAdHandler = function (evt) {
+    closeAd();
+    openAd(evt);
+  };
+
   map.addEventListener('keydown', function (evt) {
     window.util.isEscEvent(evt, closeAd);
   });
 
-  map.addEventListener('click', function (evt) {
-    if (evt.target.className === 'map__pin-image') {
-      closeAd();
-      openAd(evt);
-    }
+  map.addEventListener('click', openAdHandler);
+
+  map.addEventListener('keydown', function (evt) {
+    window.util.isEnterEvent(evt, function () {
+      openAdHandler(evt);
+    });
   });
+
 })();

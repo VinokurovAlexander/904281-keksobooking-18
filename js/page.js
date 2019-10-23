@@ -39,6 +39,5 @@
     window.page.active = makeActive;
     window.map.makeActive(makeActive);
     window.form.makeActive(makeActive);
-    // window.pin.main.addMousemoveHandler(makeActive);
   };
 })();
