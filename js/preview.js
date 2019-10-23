@@ -25,11 +25,9 @@
       }
 
       if (offersPhotos.length > 1) {
-        offersPhotos.forEach(function (photo, index) {
-          if (index !== 0) {
-            photo.remove();
-          }
-        });
+        for (var i = 1; i < offersPhotos.length; i++) {
+          offersPhotos[i].remove();
+        }
       }
     }
   };
