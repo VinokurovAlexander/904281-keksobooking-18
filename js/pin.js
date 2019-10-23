@@ -133,4 +133,14 @@
   };
 
   mainPin.addMousemoveHandler();
+  mainPin.element.addEventListener('keydown', function (evt) {
+    window.util.isEnterEvent(evt, function () {
+      window.backend.load(
+          window.backend.URL.LOAD,
+          window.page.makeActive,
+          window.error.handler
+      );
+    });
+  });
+
 })();
