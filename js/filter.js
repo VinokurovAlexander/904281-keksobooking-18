@@ -73,7 +73,7 @@
    *
    * @return {array} Массив, состоящий из объектов вида 'название фильтра': 'значение фильтра'
    */
-  function getFilters() {
+  var getFilters = function () {
     var filters = Array.from(mapFilters).map(function (filter) {
       var filterObj = {};
       var filterType = filter.getAttribute('name').split('-')[1];
@@ -88,7 +88,7 @@
     });
 
     return (filters.concat(inputs));
-  }
+  };
 
   /**
    * Слушает изменения фильтров карты и отображает соответствующие пины.

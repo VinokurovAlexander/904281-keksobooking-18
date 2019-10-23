@@ -10,7 +10,7 @@
     PALACE: 'Дворец'
   };
   window.data = {
-    ApartamentTypes: ApartamentType,
+    ApartamentType: ApartamentType,
 
     /**
      * Генерирует и добавляет на карту пины и карточки офферов.
@@ -53,6 +53,17 @@
      */
     safeAnnouncements: function (announcements) {
       window.data.allAnnouncements = announcements;
+    },
+
+    /**
+     * Получает массив с удобствами в апартаментах.
+     *
+     * @return {array} Массив c удобствами.
+     */
+    getFeatures: function () {
+      return Array.from(document.querySelectorAll('.map__checkbox')).map(function (item) {
+        return item.value;
+      });
     }
   };
 })();
