@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Александр Винокуров](https://up.htmlacademy.ru/javascript/18/user/904281).
-* Наставник: [Антон Попов](https://htmlacademy.ru/profile/joker).
+* Наставник: [Сергей Рубец](https://htmlacademy.ru/profile/amator).
 
 ---
 
