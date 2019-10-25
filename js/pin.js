@@ -78,11 +78,14 @@
    * @param {object} evt - Объект события.
    */
   var mouseMoveHandler = function (evt) {
-    window.backend.load(
-        window.backend.URL.LOAD,
-        window.page.makeActive,
-        window.error.handler
-    );
+    if (!window.page.active) {
+      window.backend.load(
+          window.backend.URL.LOAD,
+          window.page.makeActive,
+          window.error.handler
+      );
+    }
+
     var coords = {
       x: evt.clientX,
       y: evt.clientY

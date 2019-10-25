@@ -8,6 +8,11 @@
     palace: 10000
   };
 
+  var Max = {
+    GUESTS: '0',
+    ROOMS: '100'
+  };
+
   var form = document.querySelector('.ad-form');
   var filters = document.querySelector('.map__filters');
 
@@ -42,9 +47,9 @@
 
       addressInput.value = window.page.active ?
         (parseInt(window.pin.main.element.style.left, 10) + Math.round(window.pin.main.WIDTH / 2)) + ', ' +
-        (parseInt(window.pin.main.element.style.top, 10) + Math.round(window.pin.main.HEIGHT / 2)) :
+        (parseInt(window.pin.main.element.style.top, 10) + Math.round(window.pin.main.HEIGHT)) :
         (parseInt(window.pin.main.element.style.left, 10) + Math.round(window.pin.main.WIDTH / 2)) + ', '
-        + (parseInt(window.pin.main.element.style.top, 10) + Math.round(window.pin.main.HEIGHT));
+        + (parseInt(window.pin.main.element.style.top, 10) + Math.round(window.pin.main.HEIGHT / 2));
     }
   };
 
@@ -110,11 +115,11 @@
     var guestsSelect = form.querySelector('select[name="capacity"]');
     var guestsUserValue = guestsSelect.querySelector('option:checked').value;
 
-    if (roomsUserValue === '100' && guestsUserValue !== '0') {
+    if (roomsUserValue === Max.ROOMS && guestsUserValue !== Max.GUESTS) {
       guestsSelect.setCustomValidity('Данное количество комнат предназначено не для гостей');
-    } else if (guestsUserValue === '0' && roomsUserValue !== '100') {
+    } else if (guestsUserValue === Max.GUESTS && roomsUserValue !== Max.ROOMS) {
       guestsSelect.setCustomValidity('Для данного количества гостей предназначено только 100 комнат');
-    } else if (guestsUserValue !== '100' && (guestsUserValue > roomsUserValue)) {
+    } else if (guestsUserValue !== Max.ROOMS && (guestsUserValue > roomsUserValue)) {
       guestsSelect.setCustomValidity('Максимальное количество гостей: ' + roomsUserValue);
     } else {
       guestsSelect.setCustomValidity('');
