@@ -61,8 +61,8 @@
         var offerTitle = advert.offer.title;
         pinImg.setAttribute('alt', offerTitle);
 
-        var locationX = advert.location.x + Pin.WIDTH / 2 + 'px';
-        var locationY = advert.location.y + Pin.HEIGHT + 'px';
+        var locationX = advert.location.x - Pin.WIDTH / 2 + 'px';
+        var locationY = advert.location.y - Pin.HEIGHT + 'px';
         var pinCoordinates = 'left: ' + locationX + '; ' + 'top: ' + locationY + ';';
         pinElement.setAttribute('style', pinCoordinates);
 

@@ -31,7 +31,7 @@
         filters.reset();
         window.preview.removeAll();
       }
-      addChangeHandlerOnApartamentType(makeActive);
+      addChangeHandlerOnApartmentType(makeActive);
       makeAllFormFieldsActive(makeActive);
       addCheckInAndCheckOutTimeChangeHandler(makeActive);
       this.setAddressInputValues();
@@ -79,17 +79,17 @@
     }
   };
 
-  var apartamentTypeSelect = form.querySelector('select[name="type"]');
-  var currentApartamentTypeValue = apartamentTypeSelect.querySelector('option:checked').value;
+  var apartmentTypeSelect = form.querySelector('select[name="type"]');
+  var currentApartmentTypeValue = apartmentTypeSelect.querySelector('option:checked').value;
   var priceInput = form.querySelector('#price');
 
   /**
    * Функция для для отображения
    * соответствующего placeholder у поля "Цена за ночь".
    */
-  var apartamentTypeHandler = function () {
-    currentApartamentTypeValue = apartamentTypeSelect.querySelector('option:checked').value;
-    priceInput.setAttribute('placeholder', MinPriceAndTypes[currentApartamentTypeValue]);
+  var apartmentTypeHandler = function () {
+    currentApartmentTypeValue = apartmentTypeSelect.querySelector('option:checked').value;
+    priceInput.setAttribute('placeholder', MinPriceAndTypes[currentApartmentTypeValue]);
   };
 
   /**
@@ -98,11 +98,11 @@
    *
    * @param {boolean} add - Флаг.
    */
-  var addChangeHandlerOnApartamentType = function (add) {
+  var addChangeHandlerOnApartmentType = function (add) {
     if (add) {
-      apartamentTypeSelect.addEventListener('change', apartamentTypeHandler);
+      apartmentTypeSelect.addEventListener('change', apartmentTypeHandler);
     } else {
-      apartamentTypeSelect.removeEventListener('change', apartamentTypeHandler);
+      apartmentTypeSelect.removeEventListener('change', apartmentTypeHandler);
     }
   };
 
@@ -136,7 +136,7 @@
   var timeinHandler = function () {
     timeout.value = timein.value;
   };
-  var timeoutHanlder = function () {
+  var timeoutHandlder = function () {
     timein.value = timeout.value;
   };
 
@@ -149,19 +149,19 @@
   var addCheckInAndCheckOutTimeChangeHandler = function (add) {
     if (add) {
       timein.addEventListener('change', timeinHandler);
-      timeout.addEventListener('change', timeoutHanlder);
+      timeout.addEventListener('change', timeoutHandlder);
     } else {
       timein.removeEventListener('change', timeinHandler);
-      timeout.removeEventListener('change', timeoutHanlder);
+      timeout.removeEventListener('change', timeoutHandlder);
     }
   };
 
   /**
    * Проверка на соответсвие поля "Тип жилья" и "Цена за ночь".
    */
-  var validatePriceAndApartamentType = function () {
-    if (priceInput.value < MinPriceAndTypes[currentApartamentTypeValue]) {
-      priceInput.setCustomValidity('Минимальная цена за ночь: ' + MinPriceAndTypes[currentApartamentTypeValue]);
+  var validatePriceAndApartmentType = function () {
+    if (priceInput.value < MinPriceAndTypes[currentApartmentTypeValue]) {
+      priceInput.setCustomValidity('Минимальная цена за ночь: ' + MinPriceAndTypes[currentApartmentTypeValue]);
     } else {
       priceInput.setCustomValidity('');
     }
@@ -172,7 +172,7 @@
    */
   var validate = function () {
     validateRoomsAndGuests();
-    validatePriceAndApartamentType();
+    validatePriceAndApartmentType();
   };
 
   var successSaveFormData = function () {

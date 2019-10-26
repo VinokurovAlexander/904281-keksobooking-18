@@ -3,14 +3,14 @@
 (function () {
   var ITEMS_ON_MAP_NUMBER = 5;
 
-  var ApartamentType = {
+  var ApartmentType = {
     FLAT: 'Квартира',
     BUNGALO: 'Бунгало',
     HOUSE: 'Дом',
     PALACE: 'Дворец'
   };
   window.data = {
-    ApartamentType: ApartamentType,
+    ApartmentType: ApartmentType,
 
     /**
      * Генерирует и добавляет на карту пины и карточки офферов.
